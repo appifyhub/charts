@@ -1,0 +1,9 @@
+apiVersion: v2
+name: cluster-ingress
+description: The essential Load Balancer setup using Traefik
+version: 0.1.0
+type: application
+dependencies:
+  - name: traefik
+    version: ^34.x.x # Use the latest v34-based version
+    repository: https://traefik.github.io/charts

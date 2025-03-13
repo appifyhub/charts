@@ -1,0 +1,101 @@
+traefik:
+  # Essential deployment configuration
+  deployment:
+    enabled: true
+    replicas: 1
+
+  # Enable/Disable API and dashboard
+  ingressRoute:
+    dashboard:
+      enabled: false
+
+  # Set up ingress controller relationship
+  ingressClass:
+    name: traefik # Must match the additionalArguments value below
+    isDefaultClass: true
+    enabled: true
+
+  # Additional arguments for Traefik
+  additionalArguments:
+    - "--providers.kubernetesingress.ingressclass=traefik" # Must match the ingressClass.name above
+
+  # Configure Web access
+  #
+  # Important to note:
+  # Trusted IPs config here allows no IPs to forward headers. You could replace
+  # this configuration with the IP ranges that you trust (or load balancer IP).
+  ports:
+    web:
+      port: 80
+      expose: {}
+      exposedPort: 80
+      protocol: TCP
+      forwardedHeaders:
+        enabled: false
+        trustedIPs: []
+      proxyProtocol:
+        enabled: false
+        trustedIPs: []
+    websecure:
+      port: 443
+      expose: {}
+      exposedPort: 443
+      protocol: TCP
+      forwardedHeaders:
+        enabled: false
+        trustedIPs: []
+      proxyProtocol:
+        enabled: false
+        trustedIPs: []
+
+  # Configure service
+  service:
+    enabled: true
+    type: LoadBalancer
+    annotations:
+      # These annotations are used in the cluster to automatically
+      # create a load balancer server in Hetzner Cloud
+      load-balancer.hetzner.cloud/location: "fsn1"
+      load-balancer.hetzner.cloud/name: "traefik-lb"
+      load-balancer.hetzner.cloud/protocol: "tcp"
+      load-balancer.hetzner.cloud/use-private-ip: "true"
+      load-balancer.hetzner.cloud/type: "lb11"
+      load-balancer.hetzner.cloud/algorithm-type: "round_robin"
+
+  # Enable/disable metrics collection
+  metrics:
+    prometheus:
+      enabled: true
+
+  # Resource limits
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+  # Configure health checks
+  readinessProbe:
+    failureThreshold: 3
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 2
+  livenessProbe:
+    failureThreshold: 3
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 2
+
+  # Security settings
+  securityContext:
+    capabilities:
+      drop: [ALL] # Drop all Linux capabilities by default
+      add: [NET_BIND_SERVICE] # This is required to bind to privileged ports
+    readOnlyRootFilesystem: true
+    runAsUser: 65532 # Run the container with a non-root user ID
+    runAsGroup: 65532 # Run the container with a non-root group ID
+    runAsNonRoot: true
