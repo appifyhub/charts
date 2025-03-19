@@ -1,0 +1,27 @@
+replicaCount: 1
+
+image:
+  repository: mendhak/http-https-echo
+  pullPolicy: IfNotPresent
+  tag: latest
+
+service:
+  type: ClusterIP
+  port: 80
+
+containerPorts:
+  http: 8080
+  https: 8443
+
+ingress:
+  enabled: true
+  className: traefik
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+  hosts:
+    - host: echo.appifyhub.local
+      paths:
+        - path: /
+          pathType: Prefix
+          port: 80
+  tls: []
