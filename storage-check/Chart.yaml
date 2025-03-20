@@ -1,0 +1,5 @@
+apiVersion: v2
+name: storage-check
+description: A test chart for Hetzner CSI storage
+version: 0.1.0
+type: application

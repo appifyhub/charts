@@ -1,0 +1,3 @@
+postgresql:
+  storageSize: 10Gi # This is the minimum
+  storageClass: hcloud-volumes

@@ -154,3 +154,38 @@ curl -v http://echo.appifyhub.local
 ```
 
 This should return the request details including the requester's IP address, headers, etc.
+
+## Test the persistence engine integration
+
+The setup we created from the Terraform repo enables a persistent volume manager from the cloud provider.
+This Container Storage Interface (CSI) driver allows us to attach persistent volumes to our pods dynamically.
+We can use this feature to set up a database with a persistent volume simply by using the provided Helm chart.
+
+> ⚠️ &nbsp; Cost notice: This step attaches a persistent volume to your cluster for the database to use.
+
+```bash
+# Prepare a special namespace (if not done already)
+kubectl create namespace delete-me
+# Install the persistence engine there
+helm install storage-check ./storage-check --namespace delete-me
+```
+
+If you need to undo:
+
+```bash
+# Uninstall the persistence engine
+helm uninstall storage-check --namespace delete-me
+# Remove the namespace
+kubectl delete namespace delete-me
+```
+
+### Check the persistence engine
+
+```bash
+# Connect to the database
+kubectl exec -it postgres-test-0 --namespace delete-me -- psql -U postgres testdb
+# Check the available tables
+\dt+
+# Check the database size
+SELECT pg_size_pretty(pg_database_size('testdb'));
+```

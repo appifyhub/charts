@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-test
+spec:
+  serviceName: postgres-test
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-test
+  template:
+    metadata:
+      labels:
+        app: postgres-test
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15
+          env:
+            - name: POSTGRES_PASSWORD
+              value: "testpassword"
+            - name: POSTGRES_DB
+              value: "testdb"
+          ports:
+            - containerPort: 5432
+              name: postgres
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: postgres-data-postgres-test
