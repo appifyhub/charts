@@ -1,0 +1,33 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  instances: {{ .Values.cnpg.instances }}
+  postgresql:
+    parameters:
+      max_connections: "{{ .Values.cnpg.parameters.max_connections }}"
+      shared_buffers: "{{ .Values.cnpg.parameters.shared_buffers }}"
+  resources:
+    requests:
+      memory: {{ .Values.cnpg.resources.requests.memory | quote }}
+      cpu: {{ .Values.cnpg.resources.requests.cpu | quote }}
+    limits:
+      memory: {{ .Values.cnpg.resources.limits.memory | quote }}
+      cpu: {{ .Values.cnpg.resources.limits.cpu | quote }}
+  storage:
+    size: {{ .Values.cnpg.storage.size }}
+    storageClass: {{ .Values.cnpg.storage.storageClass }}
+  bootstrap:
+    initdb:
+      database: {{ .Values.cnpg.bootstrap.database }}
+      owner: {{ .Values.cnpg.bootstrap.owner }}
+      secret:
+        name: {{ .Release.Name }}-superuser
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist

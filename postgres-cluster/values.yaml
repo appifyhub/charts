@@ -1,0 +1,46 @@
+# Operator-specific configuration
+operator:
+  crds:
+    create: true
+  tolerations:
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: "true"
+  nameOverride: "cloudnative-pg"
+  fullnameOverride: "cloudnative-pg"
+
+# Cluster instances configuration
+cnpg:
+  instances: 1 # This is the minimum
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+  storage:
+    size: "10Gi" # This is the minimum
+    storageClass: "hcloud-volumes"
+  parameters:
+    max_connections: "50"
+    shared_buffers: "16MB"
+
+  # Bootstrap configuration (to edit via Helm CLI)
+  bootstrap:
+    database: "default"
+    owner: "postgres"
+  auth:
+    username: "postgres"
+    password: "pgpass"
+
+  # Monitoring and Health
+  monitoring:
+    enablePodMonitor: true
+  primaryUpdateStrategy: unsupervised
+  backup:
+    enabled: false
+    # retentionPolicy: "7d"
+    # schedule: "0 0 * * *"

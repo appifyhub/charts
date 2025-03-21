@@ -111,7 +111,7 @@ helm upgrade cluster-ingress ./cluster-ingress --namespace traefik \
   --set-string traefik.service.annotations."load-balancer\.hetzner\.cloud/uses-proxyprotocol"=true
 ```
 
-## Test the setup using an Echo Server
+## Test the networking setup
 
 ### Install the echo server into your cluster
 
@@ -189,3 +189,9 @@ kubectl exec -it postgres-test-0 --namespace delete-me -- psql -U postgres testd
 # Check the database size
 SELECT pg_size_pretty(pg_database_size('testdb'));
 ```
+
+## Installing other apps and charts
+
+Here's a summary of which additional tools this repository offers:
+
+  - [CloudNative PostgreSQL Cluster](./postgres-cluster/README.md)
