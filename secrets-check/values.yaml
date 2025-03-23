@@ -1,0 +1,22 @@
+image:
+  repository: busybox
+  tag: latest
+  pullPolicy: IfNotPresent
+
+resources:
+  requests:
+    cpu: "10m"
+    memory: "32Mi"
+  limits:
+    cpu: "20m"
+    memory: "64Mi"
+
+doppler:
+  token: "" # Service Token, to be set at install time
+  project: "appifyhub-cloud"
+  config: "local"
+  namespace: "secrets" # For the Doppler service token secret
+
+extraEnv:
+  - name: TEST_HARD_CODED_VAR
+    value: "test-hard-coded-value"

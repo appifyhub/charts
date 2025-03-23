@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+  annotations:
+    secrets.doppler.com/reload: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+      annotations:
+        secrets.doppler.com/reload: "true"
+    spec:
+      containers:
+        - name: secrets-check
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ['sh', '-c', 'while true; do echo "Current environment at $(date):"; env | sort; sleep 30; done']
+          envFrom:
+            - secretRef:
+                name: {{ .Release.Name }}-doppler-secret
+            - secretRef:
+                name: {{ .Release.Name }}-test-secret
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- if .Values.extraEnv }}
+          env:
+            {{- toYaml .Values.extraEnv | nindent 12 }}
+          {{- end }}

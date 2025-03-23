@@ -1,0 +1,10 @@
+You just installed {{ .Chart.Name }}!
+Your release name is {{ .Release.Name }}.
+
+To check the environment variables in your pod:
+
+  kubectl logs -f deployment/{{ .Release.Name }} --namespace {{ .Release.Namespace }}
+
+To execute a shell in your pod:
+
+  kubectl exec -it deployment/{{ .Release.Name }} --namespace {{ .Release.Namespace }} -- sh

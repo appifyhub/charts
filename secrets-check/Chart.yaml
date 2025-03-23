@@ -1,0 +1,5 @@
+apiVersion: v2
+name: secrets-check
+description: A utility chart for testing Kubernetes secrets with Doppler
+version: 0.1.0
+type: application
