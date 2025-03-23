@@ -1,0 +1,9 @@
+apiVersion: v2
+name: vault-secrets
+description: HashiCorp Vault Secrets Operator with server
+version: 0.1.0
+type: application
+dependencies:
+  - name: vault
+    version: ^0.x.x # Use the latest v0-based version
+    repository: https://helm.releases.hashicorp.com

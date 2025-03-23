@@ -1,0 +1,67 @@
+# Needed to release the PV and PVC on Helm uninstall
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-pvc-cleanup
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation
+    "helm.sh/hook-weight": "-5"
+spec:
+  template:
+    metadata:
+      name: {{ .Release.Name }}-pvc-cleanup
+    spec:
+      serviceAccountName: {{ .Release.Name }}-pvc-cleanup
+      containers:
+      - name: kubectl
+        image: bitnami/kubectl
+        command:
+        - /bin/sh
+        - -c
+        - |
+          kubectl delete pvc data-{{ .Release.Name }}-0 -n {{ .Release.Namespace }}
+      restartPolicy: Never
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Release.Name }}-pvc-cleanup
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Release.Name }}-pvc-cleanup
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation
+rules:
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims"]
+  verbs: ["delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Release.Name }}-pvc-cleanup
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ .Release.Name }}-pvc-cleanup
+subjects:
+- kind: ServiceAccount
+  name: {{ .Release.Name }}-pvc-cleanup
+  namespace: {{ .Release.Namespace }}

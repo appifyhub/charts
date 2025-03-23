@@ -1,0 +1,45 @@
+vault:
+  # Configure the Vault feature set
+  injector:
+    enabled: true # For injecting into Pods
+  csi:
+    enabled: true # For mounting secrets as volumes
+  dev:
+    enabled: false # Production mode
+
+  # Configure the Vault scale
+  server:
+    standalone:
+      enabled: true # Incompatible with HA
+    ha:
+      enabled: false # Incompatible with Standalone
+      replicas: 1
+    dataStorage:
+      enabled: true
+      size: 10Gi # This is the minimum
+      storageClass: hcloud-volumes
+    resources:
+      requests:
+        cpu: 70m
+        memory: 50Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
+    extraEnvironmentVars:
+      VAULT_RAFT_PATH: "/vault/data"
+
+# Configure the Vault server for outside access (default: disabled)
+ingress:
+  enabled: false
+  name: vault-secrets
+  className: traefik
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+  service:
+    name: vault-secrets
+    port: 8200
+  hosts:
+    - host: vault.appifyhub.local
+      paths:
+        - path: /
+          pathType: Prefix
