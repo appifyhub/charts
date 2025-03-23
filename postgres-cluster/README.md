@@ -1,14 +1,14 @@
-# CloudNative PostgreSQL Charts
+# PostgreSQL Cluster
 
-This repository contains the **essential** Kubernetes (K8s) configuration and Helm chart manifests for deploying a foundational PostgreSQL database cluster using [CloudNative PostgreSQL](https://github.com/cloudnative-pg/cloudnative-pg) (CloudNativePG/CNPG).
+This directory contains the **essential** Kubernetes (K8s) configuration and Helm chart manifests for deploying a foundational PostgreSQL database cluster using [CloudNative PostgreSQL](https://github.com/cloudnative-pg/cloudnative-pg) (CloudNativePG/CNPG).
 
-> ⚠️ &nbsp; Not recommended for production as you might need higher availability.
+> ⚠️ &nbsp; This might not be enough for your production workloads.
 
 ### How to use this?
 
 Prerequisites:
 
-1. Set up your cluster using the configuration provided in the [root-level README](../README.md)
+  1. Follow the basic setup steps from the [root-level README](../README.md)
 
 ## Installing dependencies
 
@@ -22,9 +22,9 @@ helm repo update
 
 ## Setting up the database cluster
 
-The first step is to install the CNPG operator which will control the new database cluster from the background. There are two ways to do this.
+Let's move to the repository root for this. The first step is to install the CNPG operator which will control the new database cluster in the background. There are two ways to do this.
 
-### 1. Using only the CNPG Helm chart
+### 1. Using only the CNPG Helm chart _(not our way)_
 
 ```bash
 # Optionally create a dedicated namespace for databases
@@ -54,14 +54,11 @@ kubectl delete crd \
 kubectl delete namespace databases
 ```
 
-This way does not automatically spawn database instances and only installs the CNPG operator.
-In a subsequent step, you will need to install the actual databases. This directory contains
-a Helm chart that also installs the databases, so you can use that instead.
+This way does not automatically spawn database instances and only installs the CNPG operator. In a subsequent step, you will need to install the actual databases. This directory contains a Helm chart that also installs the databases, so you can use that instead.
 
 ### 2. Using the local Helm chart – recommended
 
-This method only enables the CRDs first, then expects you to install the databases using
-the provided Helm chart.
+This method only enables the CRDs first, then expects you to install the databases using the provided Helm chart.
 
 ```bash
 # This part is the same as in the previous section
@@ -90,17 +87,32 @@ kubectl delete namespace databases
 
 ## Installing the databases
 
-This section assumes that you have already set up the CRDs using the second method above.
-Now that the cluster is prepared, you can go ahead and install the operator and databases.
+This section assumes that you have already set up the CRDs using the second method above. Now that the cluster is prepared, you can go ahead and install the operator and databases.
 
 **Important**: Your CNPG operator installation should have printed notes upon success. In those notes, you should have the maximum number of nodes on which you can install your database instances. For example, if you have 3 worker nodes, then the operator should have printed that 3 database instances can be installed. You don't have to follow this pattern, but you should know that a different setup might impact how K8s schedules work on your cluster, especially requests that depend on pods with database access.
 
-> ⚠️ &nbsp; Cost notice: This step allocates additional volume storage for the database instances, which might incur additional costs.
+There are clear benefits of having multiple database instances:
+
+- You can have a primary instance and two replicas – great for high availability and automatic failover handling
+- Different access modes through dedicated services:
+  - `postgres-cluster-rw`: Read/Write endpoint (primary)
+  - `postgres-cluster-ro`: Read-Only endpoint (replicas)
+  - `postgres-cluster-r`: Read endpoint (all instances)
+- Controlled workload scheduling:
+  - Database operator runs on the control plane
+  - Database instances run on the worker nodes
+
+> ⚠️ &nbsp; Cost notice: This step allocates additional volumes for each of the database instances.
 
 The default chart configuration installs only one instance, but you can change that number using the Helm installation command:
 
 ```bash
 # Install 3 instances of the database cluster
 helm install postgres-cluster ./postgres-cluster --namespace databases \
-  --set cnpg.instances=3
+  --set cnpg.instances=3 \
+  --set cnpg.auth.username=admin_username_you_want \
+  --set cnpg.auth.password=admin_password_you_want \
+  --set cnpg.bootstrap.database=default_database_you_want \
+  --set cnpg.bootstrap.owner=default_owner_you_want
 ```
+
