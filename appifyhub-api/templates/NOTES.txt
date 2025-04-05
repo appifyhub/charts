@@ -1,0 +1,28 @@
+You have installed {{ .Chart.Name }}.
+
+Your new API service is now running in the cluster with the following configuration:
+
+Application: {{ .Release.Name }}
+Namespace: {{ .Release.Namespace }}
+{{- if .Values.ingress.tls.enabled }}
+External URL: https://{{ .Values.ingress.domain.prefix }}.{{ .Values.ingress.domain.base }}
+{{- else }}
+External URL: http://{{ .Values.ingress.domain.prefix }}.{{ .Values.ingress.domain.base }}
+{{- end }}
+
+If using a local environment instead of a real DNS, add the IP address of your load balancer to your /etc/hosts file:
+   [YOUR_LB_IP] {{ .Values.ingress.domain.prefix }}.{{ .Values.ingress.domain.base }}
+
+To check the status of your deployment:
+  kubectl get pods,svc,ingress -n {{ .Release.Namespace }}
+
+Secret configuration is stored in Doppler with:
+  Project: {{ .Values.secrets.doppler.project }}
+  Config: {{ .Values.secrets.doppler.config }}
+
+You must have the following Doppler secrets defined:
+  - KEYSTORE_BASE64: base64-encoded JKS/P12 keystore file
+  - Database credentials
+  - Other application secrets
+
+The keystore will be decoded to the path specified by KEYSTORE_FILE env variable.

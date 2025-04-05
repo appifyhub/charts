@@ -2,7 +2,7 @@
 
 This repository contains the **essential** Kubernetes (K8s) configuration and Helm chart manifests for deploying a foundational cluster infrastructure for AppifyHub's suite of services. This is a companion repository to [AppifyHub's Terraform repository](https://github.com/appifyhub/terraform).
 
-> ⚠️ &nbsp; This might not be enough for your production workloads.
+> ⚠️ &nbsp; This setup is not scalable enough for production workloads.
 
 ### How to use this?
 
@@ -31,3 +31,7 @@ Here's a summary of which additional tools this repository offers:
   - [Echo Test](./echo/README.md): A simple HTTP Echo server for testing connectivity
   - [Persistence Test](./persistence-check/README.md): A simple database server for testing persistence
   - [Secrets Test (using Doppler)](./secrets-check/README.md): A simple pod that helps verify Doppler and plain secrets injection
+
+#### Apps and Services
+
+  - [AppifyHub's Monolith API](./appifyhub-api/README.md): The API service from the [AppifyHub Monolith repository](https://github.com/appifyhub/monolith)

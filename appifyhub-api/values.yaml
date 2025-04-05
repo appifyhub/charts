@@ -1,0 +1,63 @@
+# Basic app configuration
+app:
+  name: appifyhub-api
+  image:
+    repository: appifyhub/service
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicas: 1
+  revisionHistoryLimit: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 350Mi
+    limits:
+      cpu: 750m
+      memory: 700Mi
+  servicePort: 80
+  containerPort: 8080
+  monitors:
+    enabled: true
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "8080"
+      prometheus.io/path: "/actuator/prometheus"
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: traefik
+  domain:
+    base: cloud.appifyhub.local
+    prefix: api
+  tls:
+    enabled: false
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.tls: "false"
+
+# Secret management
+secrets:
+  provider: doppler
+  doppler:
+    token: "" # Service Token, to be set at install time
+    project: appifyhub-cloud
+    config: local
+
+# Non-sensitive configuration
+config:
+  enabled: true
+  values:
+    # Database configuration
+    DB_TYPE: "postgresql"
+    POSTGRES_HOST: "postgres-cluster-rw.databases.svc.cluster.local"
+    # Service configuration
+    KEYSTORE_FILE: "/keystore.p12"
+    IP_2_LOCATION_FILE: "/ip2location/IP2Location.bin"
+    JWT_EXPIRATION_DAYS: "90"
+    API_KEY_EXPIRATION_DAYS: "700"
+    LOGGING_LEVEL: "INFO"
+    # Project configuration
+    CREATOR_PROP_PROJECT_NAME: "AppifyHub"
+    OTEL_SDK_DISABLED: "true"
+    OTEL_EXPORTER_OTLP_ENDPOINT: ""
