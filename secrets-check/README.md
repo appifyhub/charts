@@ -100,7 +100,7 @@ helm uninstall secrets-check --namespace delete-me
 kubectl delete namespace delete-me
 ```
 
-The chart should be installed now, and we should have deployed a pod that can check for the presence of the injected secrets.
+The chart should be installed now, and we should have deployed a pod that can check for the presence of the injected secrets. Note that `appifyhub-cloud` and `local` should be your own project name and configuration name from Doppler; for example, `local` could be replaced with `dev`, `staging` or `production`, depending on what you have configured in the branching strategy in Doppler. You can configure all these values in the Doppler Dashboard.
 
 #### Verification
 

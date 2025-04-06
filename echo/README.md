@@ -60,10 +60,18 @@ Now your Helm release is updated with the new domain value, and the cluster is r
 
 ### Test the Echo server
 
-This is the easy part – just make a request to the new domain:
+> 💡 &nbsp; If you're starting Echo for the first time, it may take **a few minutes** for the load balancer to be provisioned and the DNS to propagate. The service itself also takes a while to boot up and liveness checks to pass. The service is ready when it starts emitting logs, so keep an eye on the logs.
+
+Once the Echo pod is up and running, we move on to the final step: testing the service.
 
 ```bash
 curl -v http://echo.appifyhub.local
 ```
 
-This should return the request details including the client IP address, headers, etc.
+This should return the request details including the client IP address, headers, etc. To test header forwarding restrictions, you can use the following command:
+
+```bash
+curl -v http://echo.appifyhub.local -H "X-Forwarded-For: 100.200.50.10"
+```
+
+Because the ingress is now configured to allow `X-Forwarded-For` only originating from your load balancer and cluster ingress, this **should not** return the request details including the `X-Forwarded-For` header (not the one you manually set).

@@ -30,6 +30,7 @@ traefik:
       expose: {}
       exposedPort: 80
       protocol: TCP
+      entryPointName: web
       forwardedHeaders:
         enabled: false
         trustedIPs: []
@@ -41,6 +42,7 @@ traefik:
       expose: {}
       exposedPort: 443
       protocol: TCP
+      entryPointName: websecure
       forwardedHeaders:
         enabled: false
         trustedIPs: []

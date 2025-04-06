@@ -2,7 +2,7 @@
 
 This directory contains the **essential** Kubernetes (K8s) configuration and Helm chart manifests for deploying a foundational PostgreSQL database cluster using [CloudNative PostgreSQL](https://github.com/cloudnative-pg/cloudnative-pg) (CloudNativePG/CNPG).
 
-> ⚠️ &nbsp; This might not be enough for your production workloads.
+> ⚠️ &nbsp; This setup is not scalable enough for production workloads.
 
 ### How to use this?
 
@@ -115,4 +115,3 @@ helm install postgres-cluster ./postgres-cluster --namespace databases \
   --set cnpg.bootstrap.database=default_database_you_want \
   --set cnpg.bootstrap.owner=default_owner_you_want
 ```
-

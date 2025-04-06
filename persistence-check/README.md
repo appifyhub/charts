@@ -14,7 +14,7 @@ This guide assumes that you have been following AppifyHub's basic setup steps si
 
 This Container Storage Interface (CSI) driver allows us to attach persistent volumes to our pods **dynamically**. We can now use this feature to set up a database with a persistent volume by simply deploying the provided Helm chart. This service will be our testing ground.
 
-> ⚠️ &nbsp; Cost notice: This step attaches a new persistent volume to your cluster for the database to use.
+> ⚠️ &nbsp; Cost notice: This step attaches a new persistent volume to your cluster for the database to use. After deleting, the volume is detached and deleted. This may incur costs depending on your cloud provider.
 
 Let's move to the repository root first. From there, we can install the chart:
 

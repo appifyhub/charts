@@ -2,7 +2,7 @@
 
 This directory contains the **essential** Kubernetes (K8s) configuration and Helm chart manifests for deploying a foundational cluster Load Balancer (LB), as well as the corresponding Ingress controller.
 
-> ⚠️ &nbsp; This might not be enough for your production workloads.
+> ⚠️ &nbsp; This setup is not scalable enough for production workloads.
 
 ### How to use this?
 
@@ -59,7 +59,7 @@ Proceeding with the Traefik installation will:
   1. Install Traefik configured specifically for the cluster we set up
   1. Allow the K8s controllers to set up an external load balancer
 
-> ⚠️ &nbsp; Cost notice: This step boots up another server instance for the external load balancer to run on.
+> ⚠️ &nbsp; Cost notice: This step boots up another server instance for the external load balancer to run on. Upon deleting the load balancer, the server instance is destroyed. This may incur costs depending on your cloud provider.
 
 First, move to the repository root. From there, this is how to install this chart:
 
@@ -118,3 +118,30 @@ helm upgrade cluster-ingress ./cluster-ingress --namespace traefik \
 ```
 
 To undo, you need to uninstall and reinstall the Traefik Ingress controller.
+
+### Certificates
+
+The default configuration does not include any TLS certificates. You can use the `cert-manager` Helm chart to automatically generate and manage TLS certificates for your Ingress resources, or enable Traefik's built-in Let's Encrypt support. To test the setup, let's go with the easiest option and use Traefik's built-in Let's Encrypt support.
+
+```bash
+# Enable Let's Encrypt support (make sure to set your email address and LB IP)
+helm upgrade cluster-ingress ./cluster-ingress --namespace traefik \
+  --set "traefik.ports.web.forwardedHeaders.enabled=true" \
+  --set "traefik.ports.web.forwardedHeaders.trustedIPs[0]=10.0.0.0/8" \
+  --set "traefik.ports.web.forwardedHeaders.trustedIPs[1]=100.200.0.0/16" \
+  --set "traefik.ports.web.proxyProtocol.enabled=true" \
+  --set "traefik.ports.web.proxyProtocol.trustedIPs[0]=10.0.0.0/8" \
+  --set "traefik.ports.web.proxyProtocol.trustedIPs[1]=100.200.0.0/16" \
+  --set "traefik.ports.websecure.forwardedHeaders.enabled=true" \
+  --set "traefik.ports.websecure.forwardedHeaders.trustedIPs[0]=10.0.0.0/8" \
+  --set "traefik.ports.websecure.forwardedHeaders.trustedIPs[1]=100.200.0.0/16" \
+  --set "traefik.ports.websecure.proxyProtocol.enabled=true" \
+  --set "traefik.ports.websecure.proxyProtocol.trustedIPs[0]=10.0.0.0/8" \
+  --set "traefik.ports.websecure.proxyProtocol.trustedIPs[1]=100.200.0.0/16" \
+  --set-string traefik.service.annotations."load-balancer\.hetzner\.cloud/uses-proxyprotocol"=true \
+  --set "traefik.additionalArguments[0]=--providers.kubernetesingress.ingressclass=traefik" \
+  --set "traefik.additionalArguments[0]=--providers.kubernetesingress.ingressclass=traefik" \
+  --set "traefik.additionalArguments[1]=--certificatesresolvers.letsencrypt.acme.email=your-email@example.com" \
+  --set "traefik.additionalArguments[2]=--certificatesresolvers.letsencrypt.acme.storage=/data/acme.json" \
+  --set "traefik.additionalArguments[3]=--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+```

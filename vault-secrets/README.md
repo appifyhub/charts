@@ -2,7 +2,7 @@
 
 This directory contains the **essential** Kubernetes (K8s) configuration and Helm chart manifests for deploying HashiCorp Vault Secrets Operator using the official [HashiCorp Vault](https://developer.hashicorp.com/vault) charts.
 
-> ⚠️ &nbsp; This might not be enough for your production workloads.
+> ⚠️ &nbsp; This setup is not scalable enough for production workloads.
 
 ### How to use this?
 

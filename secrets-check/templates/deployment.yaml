@@ -15,8 +15,6 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}
-      annotations:
-        secrets.doppler.com/reload: "true"
     spec:
       containers:
         - name: secrets-check
