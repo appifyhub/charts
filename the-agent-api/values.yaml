@@ -1,0 +1,64 @@
+# Basic app configuration
+app:
+  name: the-agent-api
+  image:
+    repository: appifyhub/the-agent
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicas: 1
+  revisionHistoryLimit: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 350Mi
+    limits:
+      cpu: 750m
+      memory: 700Mi
+  servicePort: 80
+  containerPort: 80
+  monitors:
+    enabled: true
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "80"
+      prometheus.io/path: "/prometheus"
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: traefik
+  domain:
+    base: cloud.appifyhub.local
+    prefix: agent
+  tls:
+    enabled: false
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.tls: "false"
+
+# Secret management
+secrets:
+  provider: doppler
+  doppler:
+    token: "" # Service Token, to be set at install time
+    project: the-agent-cloud
+    config: local
+
+# Non-sensitive configuration
+config:
+  enabled: true
+  values:
+    # Database configuration
+    USE_IN_MEMORY_DB: "false"
+    POSTGRES_HOST: "postgres-cluster-rw.databases.svc.cluster.local"
+    # Service configuration
+    VERBOSE: "true"
+    LOG_TG_UPDATE: "true"
+    WEBSITE_URL: "https://the-agent.appifyhub.com"
+    MAX_INVITES_PER_USER: "2"
+    TELEGRAM_AUTH_ON: "true"
+    # Network configuration
+    WEB_RETRIES: "3"
+    WEB_RETRY_DELAY_S: "1"
+    WEB_TIMEOUT_S: "25"
+    THE_AGENT_ISSUE_TEMPLATES_PATH: "/app/src/templates"

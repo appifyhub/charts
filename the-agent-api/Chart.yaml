@@ -1,0 +1,5 @@
+apiVersion: v2
+name: the-agent-api
+description: Helm chart for The Agent's API service
+version: 0.1.0
+type: application

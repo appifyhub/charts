@@ -20,11 +20,11 @@ It's also strongly recommended that you install [`k9s`](https://k9scli.io/topics
 
 Here's a summary of which additional tools this repository offers:
 
-#### Core cluster components
+#### Cluster components
 
   - [Ingress Controller and Load Balancer](./cluster-ingress/README.md): A straightforward way to expose services to the Internet using Traefik
   - [PostgreSQL Cluster](./postgres-cluster/README.md): A database cluster with a CloudNativePG operator
-  - [Vault - Secrets Manager](./vault-secrets/README.md) (not recommended): An advanced secrets manager for storing sensitive configuration data
+  - [Vault - Secrets Manager](./vault-secrets/README.md): _(not recommended)_ An advanced secrets manager for storing sensitive configuration data
   
 #### Tests and Demos
 
@@ -32,6 +32,7 @@ Here's a summary of which additional tools this repository offers:
   - [Persistence Test](./persistence-check/README.md): A simple database server for testing persistence
   - [Secrets Test (using Doppler)](./secrets-check/README.md): A simple pod that helps verify Doppler and plain secrets injection
 
-#### Apps and Services
+#### App and Service Charts
 
   - [AppifyHub's Monolith API](./appifyhub-api/README.md): The API service from the [AppifyHub Monolith repository](https://github.com/appifyhub/monolith)
+  - [The Agent's API](./the-agent-api/README.md): The service from [The Agent repository](https://github.com/appifyhub/the-agent)

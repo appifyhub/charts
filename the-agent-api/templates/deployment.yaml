@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Values.app.name }}
+    instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Values.app.name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  annotations:
+    {{- if eq .Values.secrets.provider "doppler" }}
+    secrets.doppler.com/reload: "true"
+    {{- end }}
+
+spec:
+  replicas: {{ .Values.app.replicas }}
+  revisionHistoryLimit: {{ .Values.app.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      app: {{ .Values.app.name }}
+      instance: {{ .Release.Name }}
+      app.kubernetes.io/name: {{ .Values.app.name }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app.name }}
+        instance: {{ .Release.Name }}
+        app.kubernetes.io/name: {{ .Values.app.name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        {{- if .Values.app.monitors.enabled }}
+        {{- range $key, $value := .Values.app.monitors.annotations }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+        {{- end }}
+    spec:
+      # Waits until database is available
+      initContainers:
+        - name: wait-for-db
+          image: postgres:15-alpine
+          command:
+            - "sh"
+            - "-c"
+            - |
+              until pg_isready -h {{ .Values.config.values.POSTGRES_HOST }} -p 5432; do
+                echo Waiting for database
+                sleep 2
+              done
+          envFrom:
+          {{- if eq .Values.secrets.provider "doppler" }}
+            - secretRef:
+                name: {{ .Release.Name }}-doppler-secret
+          {{- end }}
+          {{- if .Values.config.enabled }}
+            - configMapRef:
+                name: {{ .Release.Name }}-config
+          {{- end }}
+
+      # Runs the main application container
+      containers:
+        - name: {{ .Values.app.name }}
+          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+          imagePullPolicy: {{ .Values.app.image.pullPolicy }}
+          envFrom:
+          {{- if eq .Values.secrets.provider "doppler" }}
+            - secretRef:
+                name: {{ .Release.Name }}-doppler-secret
+          {{- end }}
+          {{- if .Values.config.enabled }}
+            - configMapRef:
+                name: {{ .Release.Name }}-config
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.app.containerPort }}
+              protocol: TCP
+          resources:
+            requests:
+              cpu: "{{ .Values.app.resources.requests.cpu }}"
+              memory: "{{ .Values.app.resources.requests.memory }}"
+            limits:
+              cpu: "{{ .Values.app.resources.limits.cpu }}"
+              memory: "{{ .Values.app.resources.limits.memory }}"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.app.containerPort }}
+            initialDelaySeconds: 90
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.app.containerPort }}
+            initialDelaySeconds: 90
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 5
