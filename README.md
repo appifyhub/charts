@@ -18,12 +18,15 @@ It's also strongly recommended that you install [`k9s`](https://k9scli.io/topics
 
 ## Installing controllers, apps and charts
 
+Once you're connected to your K8s cluster, you can use the charts from this repository to install apps and services into it. If you're using AppifyHub's Terraform configuration, there's a `connect` script located in this directory – you can use it to quickly configure your K8s context and make sure `kubectl` works only with your desired cluster.
+
 Here's a summary of which additional tools this repository offers:
 
-#### Cluster components
+#### Cluster Tools
 
   - [Ingress Controller and Load Balancer](./cluster-ingress/README.md): A straightforward way to expose services to the Internet using Traefik
   - [PostgreSQL Cluster](./postgres-cluster/README.md): A database cluster with a CloudNativePG operator
+  - [Continuous Deployment](./continuous-deployment/README.md): A GitOps-based continuous deployment setup using ArgoCD
   - [Vault - Secrets Manager](./vault-secrets/README.md): _(not recommended)_ An advanced secrets manager for storing sensitive configuration data
   
 #### Tests and Demos

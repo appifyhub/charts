@@ -27,12 +27,12 @@ Before proceeding, make sure you're using the correct K8s context and environmen
 
 You can easily undo the environment changes by unsetting the configuration, also by using those generated configuration scripts (e.g., after you're done with making cluster changes).
 
-Now, assuming that your local `charts` and `terraform` repositories are adjacent, here's how to set up the environment:
+Let's move to this repository's root directory. Now, assuming that your local `charts` and `terraform` repositories are adjacent, here's how to set up the environment:
 
 ```bash
 # Go to the Terraform repository
 cd ../terraform
-# In case you just re-created the cluster, you'll need this step
+# [Optional] If you just re-created the cluster, you'll need this step
 rm .ssh/known_hosts
 # Configure K8s tooling to use your new cluster
 ./setkubeconfig
@@ -50,6 +50,8 @@ cd ../terraform
 # Come back to the Charts repository again
 cd ../charts
 ```
+
+There's also a convenience `connect` script in the root directory of this repository that seamlessly traverses the directories and sets up the K8s environment to your new cluster.
 
 ## Installation Guide
 
@@ -77,6 +79,15 @@ If you need to undo:
 helm uninstall cluster-ingress --namespace traefik
 # Remove the namespace
 kubectl delete namespace traefik
+```
+
+If you wish to install the additional CRDs (Custom Resource Definitions) for Traefik, e.g. to be able to include Middleware components, you can do so by running the following command:
+
+```bash
+# Install the additional CRDs – mind the Traefik version
+kubectl apply \
+  -f https://raw.githubusercontent.com/traefik/traefik/v3.3.5/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml \
+  --namespace traefik
 ```
 
 ### External Load Balancer
