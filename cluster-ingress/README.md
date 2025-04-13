@@ -151,8 +151,7 @@ helm upgrade cluster-ingress ./cluster-ingress --namespace traefik \
   --set "traefik.ports.websecure.proxyProtocol.trustedIPs[1]=100.200.0.0/16" \
   --set-string traefik.service.annotations."load-balancer\.hetzner\.cloud/uses-proxyprotocol"=true \
   --set "traefik.additionalArguments[0]=--providers.kubernetesingress.ingressclass=traefik" \
-  --set "traefik.additionalArguments[0]=--providers.kubernetesingress.ingressclass=traefik" \
   --set "traefik.additionalArguments[1]=--certificatesresolvers.letsencrypt.acme.email=your-email@example.com" \
   --set "traefik.additionalArguments[2]=--certificatesresolvers.letsencrypt.acme.storage=/data/acme.json" \
-  --set "traefik.additionalArguments[3]=--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+  --set "traefik.additionalArguments[3]=--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
 ```

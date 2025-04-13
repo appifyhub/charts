@@ -50,6 +50,10 @@ traefik:
         enabled: false
         trustedIPs: []
 
+  # Persistence
+  persistence:
+    enabled: false
+
   # Configure service
   service:
     enabled: true
