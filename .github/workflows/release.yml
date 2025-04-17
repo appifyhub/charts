@@ -1,0 +1,54 @@
+name: Release Charts
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4.3.0
+
+      - name: Add Helm repository dependencies
+        run: |
+          find . -type d -maxdepth 1 ! -path "*/\.*" -exec bash -c '
+            set -e
+            add_repos() {
+              if [ -f "$1/Chart.yaml" ]; then
+                echo "Checking dependencies in $1/Chart.yaml"
+                # Extract repository URLs from dependencies, removing "repository:" prefix
+                grep -A2 "repository:" "$1/Chart.yaml" | grep "http" | sed "s/.*repository: *//" | tr -d " " | sort -u | while read -r repo; do
+                  echo "    Found Helm repository: $repo"
+                  # Extract hostname between "http[s]://"" and first "/", replace dots with dashes
+                  repo_name=$(echo "$repo" | sed -E "s|https?://([^/]+).*|\1|" | tr "." "-")
+                  echo "    Adding Helm repository: $repo_name"
+                  helm repo add "$repo_name" "$repo" || true
+                done
+              fi
+            }
+            add_repos "$0"
+          ' {} \;
+          helm repo update
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.7.0
+        with:
+          charts_dir: .
+          skip_existing: true
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
