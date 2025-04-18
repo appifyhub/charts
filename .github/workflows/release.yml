@@ -52,3 +52,11 @@ jobs:
           skip_existing: true
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      # Rebase gh-pages onto main, keeping the gh-pages history on top
+      - name: Sync gh-pages with main
+        run: |
+          git fetch origin gh-pages
+          git checkout gh-pages
+          git rebase main
+          git push --force-with-lease origin gh-pages
