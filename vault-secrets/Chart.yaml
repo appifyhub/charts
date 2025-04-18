@@ -1,7 +1,7 @@
 apiVersion: v2
 name: vault-secrets
 description: HashiCorp Vault - Secrets Operator with server
-version: 0.2.0
+version: 0.3.0
 type: application
 dependencies:
   - name: vault
