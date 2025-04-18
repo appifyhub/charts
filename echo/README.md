@@ -18,7 +18,7 @@ Let's move to the repository root first. From there, we can install the chart:
 # Prepare a dedicated namespace (if not already there)
 kubectl create namespace delete-me
 # Install the Echo server there
-helm install echo ./echo --namespace delete-me
+helm install echo appifyhub/echo --namespace delete-me
 ```
 
 If you need to undo:
@@ -52,7 +52,7 @@ Either way, the new domain's ingress route needs to be set within the cluster. T
 
 ```bash
 # Upgrade the release with the new value
-helm upgrade echo ./echo --namespace delete-me \
+helm upgrade echo appifyhub/echo --namespace delete-me \
   --set "ingress.hosts[0].host=some.other.domain.local"
 ```
 

@@ -1,10 +1,10 @@
 apiVersion: v2
 name: postgres-cluster
 description: CloudNative PostgreSQL cluster
-version: 0.1.0
+version: 0.2.0
 type: application
 dependencies:
   - name: cloudnative-pg
     alias: operator
-    version: ^0.x.x
+    version: ^0.x.x # Use the latest v0-based version
     repository: https://cloudnative-pg.github.io/charts

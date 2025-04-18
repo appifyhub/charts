@@ -2,7 +2,7 @@
 
 This repository contains the **essential** Kubernetes (K8s) configuration and Helm chart manifests for deploying a foundational cluster infrastructure for AppifyHub's suite of services. This is a companion repository to [AppifyHub's Terraform repository](https://github.com/appifyhub/terraform).
 
-> ⚠️ &nbsp; This setup is not scalable enough for production workloads.
+> ⚠️ &nbsp; This setup, unchanged, is not scalable enough for production workloads.
 
 ### How to use this?
 
@@ -20,6 +20,22 @@ It's also strongly recommended that you install [`k9s`](https://k9scli.io/topics
 
 Once you're connected to your K8s cluster, you can use the charts from this repository to install apps and services into it. If you're using AppifyHub's Terraform configuration, there's a `connect` script located in this directory – you can use it to quickly configure your K8s context and make sure `kubectl` works only with your desired cluster.
 
+In order to get these local charts directly available in your Helm CLI, you can add this repository to your local Helm configuration:
+
+```bash
+# Add the AppifyHub Helm repository
+helm repo add appifyhub https://charts.appifyhub.com
+# Update the local Helm repository cache
+helm repo update
+```
+
+To list all available charts in this repository, you can run:
+
+```bash
+# List all available charts in the AppifyHub Helm repository
+helm search repo appifyhub
+```
+
 Here's a summary of which additional tools this repository offers:
 
 #### Cluster Tools
@@ -28,7 +44,7 @@ Here's a summary of which additional tools this repository offers:
   - [PostgreSQL Cluster](./postgres-cluster/README.md): A database cluster with a CloudNativePG operator
   - [Continuous Deployment](./continuous-deployment/README.md): A GitOps-based continuous deployment setup using ArgoCD
   - [Vault - Secrets Manager](./vault-secrets/README.md): _(not recommended)_ An advanced secrets manager for storing sensitive configuration data
-  
+
 #### Tests and Demos
 
   - [Echo Test](./echo/README.md): A simple HTTP Echo server for testing connectivity

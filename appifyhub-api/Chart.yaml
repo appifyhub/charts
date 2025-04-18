@@ -1,5 +1,5 @@
 apiVersion: v2
 name: appifyhub-api
-description: Helm chart for AppifyHub's API monolith service
-version: 0.1.0
+description: AppifyHub's API monolith service
+version: 0.2.0
 type: application

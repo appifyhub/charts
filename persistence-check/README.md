@@ -22,7 +22,7 @@ Let's move to the repository root first. From there, we can install the chart:
 # Prepare a special namespace (if not done already)
 kubectl create namespace delete-me
 # Install the service there
-helm install persistence-check ./persistence-check --namespace delete-me
+helm install persistence-check appifyhub/persistence-check --namespace delete-me
 ```
 
 If you need to undo:

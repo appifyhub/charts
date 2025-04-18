@@ -108,7 +108,7 @@ The default chart configuration installs only one instance, but you can change t
 
 ```bash
 # Install 3 instances of the database cluster
-helm install postgres-cluster ./postgres-cluster --namespace databases \
+helm install postgres-cluster appifyhub/postgres-cluster --namespace databases \
   --set cnpg.instances=3 \
   --set cnpg.auth.username=admin_username_you_want \
   --set cnpg.auth.password=admin_password_you_want \

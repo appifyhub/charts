@@ -42,7 +42,7 @@ Let's move to the repository root first. From there, we can install the chart:
 # Prepare a dedicated namespace (if not already there)
 kubectl create namespace delete-me
 # Install the service from there
-helm install the-agent ./the-agent-api \
+helm install the-agent appifyhub/the-agent-api \
   --namespace delete-me \
   --set secrets.provider="none"
 ```
@@ -79,7 +79,7 @@ Because a configuration based on a real domain is not assumed as the default, re
 # Prepare a dedicated namespace (if not already there)
 kubectl create namespace staging
 # Install the service from there - assuming you want it in a 'staging' namespace
-helm install the-agent ./the-agent-api \
+helm install the-agent appifyhub/the-agent-api \
 --namespace staging \
 --set app.image.tag="latest_beta" \
 --set secrets.doppler.project="the-agent-cloud" \
@@ -105,7 +105,7 @@ The configurations shown so far are not using TLS or HTTPS. This is fine for dev
 
 ```bash
 # Let's upgrade our existing Helm release to include TLS and HTTPS
-helm upgrade the-agent ./the-agent-api \
+helm upgrade the-agent appifyhub/the-agent-api \
 --namespace staging \
 --set app.replicas=2 \
 --set app.image.tag="latest_beta" \

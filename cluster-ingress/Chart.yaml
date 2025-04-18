@@ -1,7 +1,7 @@
 apiVersion: v2
 name: cluster-ingress
 description: The essential Load Balancer setup using Traefik
-version: 0.1.0
+version: 0.2.0
 type: application
 dependencies:
   - name: traefik

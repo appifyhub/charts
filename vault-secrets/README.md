@@ -35,7 +35,7 @@ This configuration installs a non-HA Vault instance with a single replica. For p
 # Create a dedicated namespace for vault
 kubectl create namespace vault
 # Install the Vault Secrets Operator
-helm install vault-secrets ./vault-secrets --namespace vault
+helm install vault-secrets appifyhub/vault-secrets --namespace vault
 ```
 
 If you need to undo:

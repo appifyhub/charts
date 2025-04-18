@@ -69,7 +69,8 @@ First, move to the repository root. From there, this is how to install this char
 # Set up a separate namespace for our Traefik Ingress controller
 kubectl create namespace traefik
 # Install this Traefik Ingress Helm chart
-helm install cluster-ingress ./cluster-ingress --namespace traefik
+helm install cluster-ingress appifyhub/cluster-ingress \
+  --namespace traefik
 ```
 
 If you need to undo:
@@ -112,7 +113,8 @@ To allow only your own network to proxy and forward headers, you could use the f
 
 ```bash
 # Enable forwarding and set your IPs as the only trusted IPs
-helm upgrade cluster-ingress ./cluster-ingress --namespace traefik \
+helm upgrade cluster-ingress appifyhub/cluster-ingress \
+  --namespace traefik \
   --set "traefik.ports.web.forwardedHeaders.enabled=true" \
   --set "traefik.ports.web.forwardedHeaders.trustedIPs[0]=10.0.0.0/8" \
   --set "traefik.ports.web.forwardedHeaders.trustedIPs[1]=100.200.0.0/16" \
@@ -136,7 +138,8 @@ The default configuration does not include any TLS certificates. You can use the
 
 ```bash
 # Enable Let's Encrypt support (make sure to set your email address and LB IP)
-helm upgrade cluster-ingress ./cluster-ingress --namespace traefik \
+helm upgrade cluster-ingress appifyhub/cluster-ingress \
+  --namespace traefik \
   --set "traefik.ports.web.forwardedHeaders.enabled=true" \
   --set "traefik.ports.web.forwardedHeaders.trustedIPs[0]=10.0.0.0/8" \
   --set "traefik.ports.web.forwardedHeaders.trustedIPs[1]=100.200.0.0/16" \

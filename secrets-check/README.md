@@ -85,7 +85,7 @@ Let's move to the repository root now. From there, we can install this chart. In
 # Prepare a dedicated namespace (if not already there)
 kubectl create namespace delete-me
 # Install the Secrets Check into the namespace
-helm install secrets-check ./secrets-check --namespace delete-me \
+helm install secrets-check appifyhub/secrets-check --namespace delete-me \
   --set "doppler.project=appifyhub-cloud" \
   --set "doppler.config=local" \
   --set "doppler.token=dp.st.local.your-actual-token-here"
