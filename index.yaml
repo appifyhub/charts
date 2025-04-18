@@ -1,0 +1,96 @@
+apiVersion: v1
+entries:
+  appifyhub-api:
+  - apiVersion: v2
+    created: "2025-04-18T10:19:23.719258069Z"
+    description: Helm chart for AppifyHub's API monolith service
+    digest: 883023c5243f246ba255873107631d97f800ba8256c0f39d2b0025b0657e0a6b
+    name: appifyhub-api
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/appifyhub-api-0.1.0/appifyhub-api-0.1.0.tgz
+    version: 0.1.0
+  cluster-ingress:
+  - apiVersion: v2
+    created: "2025-04-18T10:19:23.82642437Z"
+    dependencies:
+    - name: traefik
+      repository: https://traefik.github.io/charts
+      version: ^35.x.x
+    description: The essential Load Balancer setup using Traefik
+    digest: 3a3dd22984707c1644bc9d6e8ce53d13bfe9b4ff6d85083926d16c90ba705f14
+    name: cluster-ingress
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/cluster-ingress-0.1.0/cluster-ingress-0.1.0.tgz
+    version: 0.1.0
+  echo:
+  - apiVersion: v2
+    created: "2025-04-18T10:19:23.937830606Z"
+    description: A simple HTTP server that echoes request details
+    digest: dc5776d34c43e85dc3586f77b2256e16736021c21e0f8bd39cb43ccd4482c2f2
+    name: echo
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/echo-0.1.0/echo-0.1.0.tgz
+    version: 0.1.0
+  persistence-check:
+  - apiVersion: v2
+    created: "2025-04-18T10:19:24.063856102Z"
+    description: A test chart for Hetzner CSI storage
+    digest: ff4acb7199e867fa7127161204e7b182c128d00cc94fd3fa7368cf2f91448122
+    name: persistence-check
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/persistence-check-0.1.0/persistence-check-0.1.0.tgz
+    version: 0.1.0
+  postgres-cluster:
+  - apiVersion: v2
+    created: "2025-04-18T10:19:24.197140419Z"
+    dependencies:
+    - alias: operator
+      name: cloudnative-pg
+      repository: https://cloudnative-pg.github.io/charts
+      version: ^0.x.x
+    description: CloudNative PostgreSQL cluster
+    digest: 391a476c4c4b5fb26a955c7f3d4604e717fedc275ef4b01f0c0f800f14526e93
+    name: postgres-cluster
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/postgres-cluster-0.1.0/postgres-cluster-0.1.0.tgz
+    version: 0.1.0
+  secrets-check:
+  - apiVersion: v2
+    created: "2025-04-18T10:19:24.298176219Z"
+    description: A utility chart for testing Kubernetes secrets with Doppler
+    digest: c3e075b112a33580e551e44dfde766e813e9ed9ac3294dc3fab2a84d695667ca
+    name: secrets-check
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/secrets-check-0.1.0/secrets-check-0.1.0.tgz
+    version: 0.1.0
+  the-agent-api:
+  - apiVersion: v2
+    created: "2025-04-18T10:19:24.430633593Z"
+    description: Helm chart for The Agent's API service
+    digest: 8a69e5bb22f44ceb344b8881ed4747ea9babe02c200765555e72ff43cfc12952
+    name: the-agent-api
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/the-agent-api-0.1.0/the-agent-api-0.1.0.tgz
+    version: 0.1.0
+  vault-secrets:
+  - apiVersion: v2
+    created: "2025-04-18T10:19:24.523794994Z"
+    dependencies:
+    - name: vault
+      repository: https://helm.releases.hashicorp.com
+      version: ^0.x.x
+    description: HashiCorp Vault Secrets Operator with server
+    digest: d0186792c5199d15a48c47017010fb7edf64536b4650914a9eba4cf76631bab1
+    name: vault-secrets
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/vault-secrets-0.1.0/vault-secrets-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-04-18T10:19:24.523805103Z"
