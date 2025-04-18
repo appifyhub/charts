@@ -2,6 +2,15 @@ apiVersion: v1
 entries:
   appifyhub-api:
   - apiVersion: v2
+    created: "2025-04-18T12:57:33.034359558Z"
+    description: AppifyHub's API monolith service
+    digest: 78905f4651c7b1088838cdb7db994cf34493d98beba712c178b6ce714c67db81
+    name: appifyhub-api
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/appifyhub-api-0.2.0/appifyhub-api-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
     created: "2025-04-18T10:19:23.719258069Z"
     description: Helm chart for AppifyHub's API monolith service
     digest: 883023c5243f246ba255873107631d97f800ba8256c0f39d2b0025b0657e0a6b
@@ -11,6 +20,19 @@ entries:
     - https://github.com/appifyhub/charts/releases/download/appifyhub-api-0.1.0/appifyhub-api-0.1.0.tgz
     version: 0.1.0
   cluster-ingress:
+  - apiVersion: v2
+    created: "2025-04-18T12:57:33.15336802Z"
+    dependencies:
+    - name: traefik
+      repository: https://traefik.github.io/charts
+      version: ^35.x.x
+    description: The essential Load Balancer setup using Traefik
+    digest: 2849ffa39b5a00174001a421ddecb59025528e1c4adf381d3638f035278544d1
+    name: cluster-ingress
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/cluster-ingress-0.2.0/cluster-ingress-0.2.0.tgz
+    version: 0.2.0
   - apiVersion: v2
     created: "2025-04-18T10:19:23.82642437Z"
     dependencies:
@@ -26,6 +48,15 @@ entries:
     version: 0.1.0
   echo:
   - apiVersion: v2
+    created: "2025-04-18T12:57:33.271842457Z"
+    description: Simple HTTP server that echoes request details
+    digest: 21b4cc19f301cd311b25cf40d1baa6192cc4fdb431b66856cc9dcb61bc5d0f7f
+    name: echo
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/echo-0.2.0/echo-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
     created: "2025-04-18T10:19:23.937830606Z"
     description: A simple HTTP server that echoes request details
     digest: dc5776d34c43e85dc3586f77b2256e16736021c21e0f8bd39cb43ccd4482c2f2
@@ -36,6 +67,15 @@ entries:
     version: 0.1.0
   persistence-check:
   - apiVersion: v2
+    created: "2025-04-18T12:57:33.400707229Z"
+    description: Test chart for the Hetzner CSI module
+    digest: 052ad7d4e240469d774662495b80e0ec19c61794285fa38370fa389276e13d69
+    name: persistence-check
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/persistence-check-0.2.0/persistence-check-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
     created: "2025-04-18T10:19:24.063856102Z"
     description: A test chart for Hetzner CSI storage
     digest: ff4acb7199e867fa7127161204e7b182c128d00cc94fd3fa7368cf2f91448122
@@ -45,6 +85,20 @@ entries:
     - https://github.com/appifyhub/charts/releases/download/persistence-check-0.1.0/persistence-check-0.1.0.tgz
     version: 0.1.0
   postgres-cluster:
+  - apiVersion: v2
+    created: "2025-04-18T12:57:33.557397374Z"
+    dependencies:
+    - alias: operator
+      name: cloudnative-pg
+      repository: https://cloudnative-pg.github.io/charts
+      version: ^0.x.x
+    description: CloudNative PostgreSQL cluster
+    digest: 378b473198f07a75eee964601a90767eda7c3cfd4a9c8a618c70a998dd89389c
+    name: postgres-cluster
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/postgres-cluster-0.2.0/postgres-cluster-0.2.0.tgz
+    version: 0.2.0
   - apiVersion: v2
     created: "2025-04-18T10:19:24.197140419Z"
     dependencies:
@@ -61,6 +115,15 @@ entries:
     version: 0.1.0
   secrets-check:
   - apiVersion: v2
+    created: "2025-04-18T12:57:33.674458403Z"
+    description: Test chart for Kubernetes secrets with Doppler
+    digest: 34a1e91c02695f091c2d17aebb273999eea22b033ffd5b98d7c1742cc3cdbb40
+    name: secrets-check
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/secrets-check-0.2.0/secrets-check-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
     created: "2025-04-18T10:19:24.298176219Z"
     description: A utility chart for testing Kubernetes secrets with Doppler
     digest: c3e075b112a33580e551e44dfde766e813e9ed9ac3294dc3fab2a84d695667ca
@@ -71,6 +134,15 @@ entries:
     version: 0.1.0
   the-agent-api:
   - apiVersion: v2
+    created: "2025-04-18T12:57:33.773874515Z"
+    description: The Agent's API service
+    digest: 16c58aa13aa82c29365306bc04a745af1dcfcbbf07eb8d3fccff62d9c4f4daf2
+    name: the-agent-api
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/the-agent-api-0.2.0/the-agent-api-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
     created: "2025-04-18T10:19:24.430633593Z"
     description: Helm chart for The Agent's API service
     digest: 8a69e5bb22f44ceb344b8881ed4747ea9babe02c200765555e72ff43cfc12952
@@ -80,6 +152,19 @@ entries:
     - https://github.com/appifyhub/charts/releases/download/the-agent-api-0.1.0/the-agent-api-0.1.0.tgz
     version: 0.1.0
   vault-secrets:
+  - apiVersion: v2
+    created: "2025-04-18T12:57:33.896720454Z"
+    dependencies:
+    - name: vault
+      repository: https://helm.releases.hashicorp.com
+      version: ^0.x.x
+    description: HashiCorp Vault - Secrets Operator with server
+    digest: 278d8c05c07079ae23b835982bbbeeeeafdd94888ef0cd1a8f6d4881a88c3e55
+    name: vault-secrets
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/vault-secrets-0.2.0/vault-secrets-0.2.0.tgz
+    version: 0.2.0
   - apiVersion: v2
     created: "2025-04-18T10:19:24.523794994Z"
     dependencies:
@@ -93,4 +178,4 @@ entries:
     urls:
     - https://github.com/appifyhub/charts/releases/download/vault-secrets-0.1.0/vault-secrets-0.1.0.tgz
     version: 0.1.0
-generated: "2025-04-18T10:19:24.523805103Z"
+generated: "2025-04-18T12:57:33.896751172Z"
