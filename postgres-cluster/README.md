@@ -22,7 +22,7 @@ helm repo update
 
 ## Setting up the database cluster
 
-Let's move to the repository root for this. The first step is to install the CNPG operator which will control the new database cluster in the background. There are two ways to do this.
+Let's install the CNPG operator. This operator controls the new database cluster in the background. There are two ways to do this.
 
 ### 1. Using only the CNPG Helm chart _(not our way)_
 

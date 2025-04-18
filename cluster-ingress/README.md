@@ -63,7 +63,7 @@ Proceeding with the Traefik installation will:
 
 > ⚠️ &nbsp; Cost notice: This step boots up another server instance for the external load balancer to run on. Upon deleting the load balancer, the server instance is destroyed. This may incur costs depending on your cloud provider.
 
-First, move to the repository root. From there, this is how to install this chart:
+Let's install the chart:
 
 ```bash
 # Set up a separate namespace for our Traefik Ingress controller

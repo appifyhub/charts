@@ -29,7 +29,9 @@ The installation process sets up Vault's two main components:
   1. The Vault Secrets Operator (VSO) – manages Vault resources in Kubernetes
   1. A Vault instance – the actual secrets manager
 
-This configuration installs a non-HA Vault instance with a single replica. For production workloads, you should consider setting up a highly available (HA) Vault cluster. To continue, let's move to the repository root first. From there, we can install the chart:
+> ⚠️ &nbsp; For production workloads, you should consider setting up a highly available (HA) Vault cluster.
+
+This configuration installs a non-HA Vault instance with a single replica:
 
 ```bash
 # Create a dedicated namespace for vault

@@ -12,7 +12,7 @@ Prerequisites:
 
 ## Install the Echo server into your cluster
 
-Let's move to the repository root first. From there, we can install the chart:
+Let's install the chart:
 
 ```bash
 # Prepare a dedicated namespace (if not already there)

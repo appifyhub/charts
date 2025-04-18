@@ -36,7 +36,7 @@ In order to use the first option, your keystore file (usually a `.jks` file or a
 
 ### The basic setup
 
-Let's move to the repository root first. From there, we can install the chart:
+Let's install the chart:
 
 ```bash
 # Prepare a dedicated namespace (if not already there)

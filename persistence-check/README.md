@@ -16,7 +16,7 @@ This Container Storage Interface (CSI) driver allows us to attach persistent vol
 
 > ⚠️ &nbsp; Cost notice: This step attaches a new persistent volume to your cluster for the database to use. After deleting, the volume is detached and deleted. This may incur costs depending on your cloud provider.
 
-Let's move to the repository root first. From there, we can install the chart:
+Let's install the chart:
 
 ```bash
 # Prepare a special namespace (if not done already)

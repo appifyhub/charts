@@ -79,7 +79,7 @@ Apart from the secret configurations we are trying to test, this chart also depl
 
 #### Deployment
 
-Let's move to the repository root now. From there, we can install this chart. In this example, we'll show how to override and customize the default configuration:
+In this example, we'll show how to override and customize the default configuration. Let's install the chart:
 
 ```bash
 # Prepare a dedicated namespace (if not already there)
