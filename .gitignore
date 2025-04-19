@@ -85,5 +85,6 @@ $RECYCLE.BIN/
 
 .vscode
 .idea
+continuous-deployment/argo/
 
 # End of custom rules

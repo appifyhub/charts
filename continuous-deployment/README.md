@@ -8,7 +8,7 @@ Most of the prerequisites are available for exploration in the [root-level READM
 
 Prerequisites:
 
-1. Follow the basic setup steps from the [root-level README](../README.md)
+  1. Follow the basic setup steps from the [root-level README](../README.md)
 
 ## Installation Guide
 
@@ -84,7 +84,33 @@ argocd login --core
 
 You can now freely use the ArgoCD CLI to interact with the API server. Note that this modifies the previous K8s context, so you may want to set it back to the original context after you're done using ArgoCD.
 
-### ArgoCD UI
+### Exporting existing Helm releases
+
+If you wish to play around with ArgoCD on your own deployments, there's a convenience script `export-helm-to-argo.sh` included next to this guide. This script pulls the Helm charts of the services you plan to deploy to ArgoCD, and then creates new ArgoCD applications for them.
+
+The script assumes that you've been following this repository's guides. If you have a different setup, the script's context configuration is at the top of the file, and you can modify it to suit your needs.
+
+Simply run it with `zsh` and monitor the output.
+
+```bash
+# Run the script to migrate Helm deployments to ArgoCD
+./export-helm-to-argo.sh
+```
+
+Once you have the ArgoCD applications created, you can use the ArgoCD CLI to manage them. You can also use the ArgoCD Web UI to view and manage your applications.
+
+It's possible to also apply the ArgoCD applications to your cluster using the `kubectl` command. This is useful if you want to deploy the applications to a different cluster or if you want to use a different deployment method.
+
+```bash
+# Apply all staging ArgoCD applications to your cluster
+kubectl apply -f continuous-deployment/argo/staging/
+# Apply all production ArgoCD applications to your cluster
+kubectl apply -f continuous-deployment/argo/production/
+```
+
+> ⚠️ &nbsp; Note that you may want to uninstall your old Helm releases after applying the ArgoCD applications. This is because the Helm releases and the ArgoCD applications may redefine each other's resources (such as replica sets), and you may end up with duplicate resources in your cluster.
+
+### ArgoCD Web UI
 
 Installation of the "core" version of ArgoCD does not include the Web UI that is usually exposed to the outside environment. If you still want to use the UI to manage your deployments, you can have your local ArgoCD CLI spawn a minimal frontend server and access the Web UI through your browser at `localhost`. Here's how to do that.
 
@@ -92,3 +118,22 @@ Installation of the "core" version of ArgoCD does not include the Web UI that is
 # Port-forward the ArgoCD API server to localhost
 argocd admin dashboard --namespace argocd
 ```
+
+### ArgoCD Image Updater
+
+The [ArgoCD Image Updater](https://argocd-image-updater.readthedocs.io) is a tool that automatically updates the images of your K8s resources managed by ArgoCD. It can be used to keep your deployments up to date with the latest images from your container registry, or to automatically update the images of your K8s resources when a new version of the image is available. The Image Updater can be installed as a separate component in your cluster, and it can be configured to work with your existing ArgoCD installation.
+
+The basic installation steps are as follows:
+
+```bash
+# Install ACDIU using kubectl
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj-labs/argocd-image-updater/stable/manifests/install.yaml
+```
+
+And to uninstall it, run:
+
+```bash
+# Uninstall ACDIU from the cluster
+kubectl delete -n argocd -f https://raw.githubusercontent.com/argoproj-labs/argocd-image-updater/stable/manifests/install.yaml
+```
+̀
