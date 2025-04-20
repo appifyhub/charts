@@ -7,9 +7,17 @@ echo ""
 
 # Ensure we're running using zsh
 if [ ! -n "$ZSH_VERSION" ]; then
-    echo "Error: This script requires zsh" >&2
+    echo "❗ Error: This script requires zsh" >&2
     exit 1
 fi
+
+# Check if tools are installed
+for cmd in jq kubectl helm; do
+  if ! command -v $cmd &> /dev/null; then
+    echo "❗ Error: $cmd is not installed."
+    exit 1
+  fi
+done
 
 # Splits the string on newlines and creates an array
 # Usage: `OUTPUT_ARRAY=(); split_lines_to_array "$NEWLINED_STRING" OUTPUT_ARRAY`
@@ -41,14 +49,6 @@ echo "Creating namespace directories in '$OUTPUT_DIR'..."
 for NAMESPACE in "${NAMESPACES[@]}"; do
   mkdir -p "$OUTPUT_DIR/$NAMESPACE"
   echo "  Created '$NAMESPACE' subdirectory"
-done
-
-# Check if tools are installed
-for cmd in jq kubectl helm; do
-  if ! command -v $cmd &> /dev/null; then
-    echo "❗ Error: $cmd is not installed."
-    exit 1
-  fi
 done
 
 # Process Helm releases and create ArgoCD applications

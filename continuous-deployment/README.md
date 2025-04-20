@@ -136,4 +136,56 @@ And to uninstall it, run:
 # Uninstall ACDIU from the cluster
 kubectl delete -n argocd -f https://raw.githubusercontent.com/argoproj-labs/argocd-image-updater/stable/manifests/install.yaml
 ```
+
+#### Rate limiting
+
+ArgoCD Image Updater comes out of the box with no Container Registry authentication mechanism set up. This means that all your image pulls and digest checks run unauthenticated, including the default 2-minute background refreshes. It is very likely that your Image Updater's client will get rate-limited by Docker Hub.
+
+To mitigate this issue, you could configure the updater so that it uses your authentication credentials instead of running unauthenticated. There's a convenience script for that at `authenticate-dockerhub.sh`, you can simply run it using `zsh` and follow the prompts.
+
+One additional tweak you can make is to change the default pull interval from 2 minutes to a larger number. You can do that by editing the ArgoCD Image Updater deployment configuration:
+
+```bash
+# Open the ArgoCD Image Updater deployment for editing
+kubectl edit -n argocd deployment argocd-image-updater
+```
+
+For example, to increase the interval to 5 minutes and 0 seconds, you can add the `--interval 5m0s` argument to the container spec. Here's where to do that:
+
+```yaml
+spec:
+  template:
+    spec:
+      containers:
+        - name: argocd-image-updater
+          args:
+            - run
+            - '--interval'
+            - 5m0s
+```
+
+You can verify that you've made the changes by querying that property:
+
+```bash
+# Fetch the args from the affected containers
+kubectl get -n argocd deployment argocd-image-updater -o yaml | \
+  yq ".spec.template.spec.containers[].args"
+```
+
+Once verified, you need to restart the image updater's deployment:
+
+```bash
+# Restart the ArgoCD Image Updater deployment
+kubectl rollout restart deployment argocd-image-updater -n argocd
+# Optionally, monitor the deployment's status until it's ready
+kubectl rollout status deployment/argocd-image-updater -n argocd
+# Optionally, check the logs
+kubectl logs -f deployment/argocd-image-updater -n argocd
+```
+
+You should see your new configuration in the first line (or near the top):
+
+```console
+# time="2025-04-20T21:21:08Z" level=info msg="argocd-image-updater v0.16.0+da7ee95 starting [loglevel:INFO, interval:5m0s, healthport:8080]"
+```
 ̀
