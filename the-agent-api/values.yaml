@@ -54,7 +54,7 @@ config:
     # Service configuration
     VERBOSE: "true"
     LOG_TG_UPDATE: "true"
-    WEBSITE_URL: "https://the-agent.appifyhub.com"
+    WEBSITE_URL: "https://agent.appifyhub.com"
     MAX_INVITES_PER_USER: "2"
     TELEGRAM_AUTH_ON: "true"
     # Network configuration
