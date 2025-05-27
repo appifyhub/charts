@@ -110,6 +110,8 @@ kubectl apply -f continuous-deployment/argo/production/
 
 > ⚠️ &nbsp; Note that you may want to uninstall your old Helm releases after applying the ArgoCD applications. This is because the Helm releases and the ArgoCD applications may redefine each other's resources (such as replica sets), and you may end up with duplicate resources in your cluster.
 
+> ⚠️ &nbsp; Note that your template secrets might be pointing to the old Helm release secrets, and you may need to update the charts to point to the new ArgoCD application secrets (or copy the secrets to the Argo environment). Your secrets with Doppler or Vault keys are the most likely to be affected by this, as they are usually created by the Helm release and not by the ArgoCD application.
+
 ### ArgoCD Web UI
 
 Installation of the "core" version of ArgoCD does not include the Web UI that is usually exposed to the outside environment. If you still want to use the UI to manage your deployments, you can have your local ArgoCD CLI spawn a minimal frontend server and access the Web UI through your browser at `localhost`. Here's how to do that.
