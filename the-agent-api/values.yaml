@@ -10,7 +10,7 @@ app:
   resources:
     requests:
       cpu: 50m
-      memory: 350Mi
+      memory: 450Mi
     limits:
       cpu: 750m
       memory: 700Mi
@@ -22,6 +22,14 @@ app:
       prometheus.io/scrape: "true"
       prometheus.io/port: "80"
       prometheus.io/path: "/prometheus"
+
+# Autoscaling configuration
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
 
 # Ingress configuration
 ingress:

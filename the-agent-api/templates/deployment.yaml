@@ -14,7 +14,9 @@ metadata:
     {{- end }}
 
 spec:
+  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.app.replicas }}
+  {{- end }}
   revisionHistoryLimit: {{ .Values.app.revisionHistoryLimit }}
   selector:
     matchLabels:
