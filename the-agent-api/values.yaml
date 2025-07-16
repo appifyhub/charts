@@ -23,6 +23,14 @@ app:
       prometheus.io/port: "80"
       prometheus.io/path: "/prometheus"
 
+# Autoscaling configuration
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
 # Ingress configuration
 ingress:
   enabled: true
