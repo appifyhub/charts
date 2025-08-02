@@ -23,17 +23,6 @@ As mentioned in the prequisites, you need to have a database set up and running,
 
 Going forward, we will assume that you have the database set up and running, but you want to manage secrets using [Doppler](https://www.doppler.com). If you don't want to use Doppler, you can create the secrets manually using the `kubectl create secret` command and disable Doppler via Helm value directives. More details on how Doppler manages secrets can be found in the [Secrets Check](../secrets-check/README.md) guide.
 
-#### Keystores
-
-There are two ways to manage the keystore required by the service for signing JWT tokens:
-
-  1. Using a K8s secret (or a secrets manager like Doppler) to inject the keystore into the service
-  1. Using a file mounted into the service's pod
-
-This guide and this chart assume that you will use the first option. The second option is not recommended for production environments, as it requires a file to be mounted into the pod, which is not a good practice for security reasons.
-
-In order to use the first option, your keystore file (usually a `.jks` file or a `.p12` file) should be stored in a K8s secret `KEYSTORE_BASE64`, in base64 format. The deployment chart will automatically boot up an "init container" with an ephemeral volume where we will decode and store the keystore file. The init container will then copy the keystore file from the K8s secret into the ephemeral volume, and the main container will use that volume to access the keystore file.
-
 ### The basic setup
 
 Let's install the chart:
