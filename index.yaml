@@ -1,6 +1,49 @@
 apiVersion: v1
 entries:
+  appifyhub-api:
+  - apiVersion: v2
+    created: "2025-10-15T20:17:11.502216599Z"
+    description: AppifyHub's API monolith service
+    digest: e4e7298dbcd553a60c8828afb8a3e5a677d25f81b32ec4fe6598eaae2dc1f9a9
+    name: appifyhub-api
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/appifyhub-api-0.3.1/appifyhub-api-0.3.1.tgz
+    version: 0.3.1
+  cluster-ingress:
+  - apiVersion: v2
+    created: "2025-10-15T20:17:11.657125208Z"
+    dependencies:
+    - name: traefik
+      repository: https://traefik.github.io/charts
+      version: ^35.x.x
+    description: The essential Load Balancer setup using Traefik
+    digest: bc41ce6133fa0b1daab206f516254dd5bc622d205c5b21b18f4ba03d8c93d947
+    name: cluster-ingress
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/cluster-ingress-0.3.1/cluster-ingress-0.3.1.tgz
+    version: 0.3.1
+  echo:
+  - apiVersion: v2
+    created: "2025-10-15T20:17:11.805906318Z"
+    description: Simple HTTP server that echoes request details
+    digest: d98114530e7102f3cdbf636edde2f41260d8d27a9b8b31e3ac89290a34d7914a
+    name: echo
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/echo-0.3.1/echo-0.3.1.tgz
+    version: 0.3.1
   n8n:
+  - apiVersion: v2
+    created: "2025-10-15T20:17:11.950227218Z"
+    description: The workflow automation platform n8n
+    digest: 77035bfc48bbd9db6df01dedc67de712a43153baab14c4a163ecae766246499b
+    name: n8n
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/n8n-0.1.1/n8n-0.1.1.tgz
+    version: 0.1.1
   - apiVersion: v2
     created: "2025-10-15T19:27:54.94109804Z"
     description: The workflow automation platform n8n
@@ -10,7 +53,51 @@ entries:
     urls:
     - https://github.com/appifyhub/charts/releases/download/n8n-0.1.0/n8n-0.1.0.tgz
     version: 0.1.0
+  persistence-check:
+  - apiVersion: v2
+    created: "2025-10-15T20:17:12.086140641Z"
+    description: Test chart for the Hetzner CSI module
+    digest: 7e95c13f177b3bda2346e9edb78a47ca0b317624e286a8e295fbd17e07bbfa05
+    name: persistence-check
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/persistence-check-0.3.1/persistence-check-0.3.1.tgz
+    version: 0.3.1
+  postgres-cluster:
+  - apiVersion: v2
+    created: "2025-10-15T20:17:12.217409594Z"
+    dependencies:
+    - alias: operator
+      name: cloudnative-pg
+      repository: https://cloudnative-pg.github.io/charts
+      version: ^0.x.x
+    description: CloudNative PostgreSQL cluster
+    digest: a6c1f3adda01d0597e26d0c14dd6fa5379279f25e54ec898ea8c1e791c6d0250
+    name: postgres-cluster
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/postgres-cluster-0.3.1/postgres-cluster-0.3.1.tgz
+    version: 0.3.1
+  secrets-check:
+  - apiVersion: v2
+    created: "2025-10-15T20:17:12.412199824Z"
+    description: Test chart for Kubernetes secrets with Doppler
+    digest: 2cc498f79d9f5926b343498291515f91f325f7cee324ee1d71fb59550e69e4b3
+    name: secrets-check
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/secrets-check-0.3.1/secrets-check-0.3.1.tgz
+    version: 0.3.1
   the-agent-api:
+  - apiVersion: v2
+    created: "2025-10-15T20:17:12.571732728Z"
+    description: The Agent's API service
+    digest: d98fe0d9b7cf9b44090a80dd0bee11f40304d768de3e622a67490630cc1395f2
+    name: the-agent-api
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/the-agent-api-0.6.2/the-agent-api-0.6.2.tgz
+    version: 0.6.2
   - apiVersion: v2
     created: "2025-07-16T19:39:35.811616351Z"
     description: The Agent's API service
@@ -20,4 +107,18 @@ entries:
     urls:
     - https://github.com/appifyhub/charts/releases/download/the-agent-api-0.6.1/the-agent-api-0.6.1.tgz
     version: 0.6.1
-generated: "2025-10-15T19:27:55.173758046Z"
+  vault-secrets:
+  - apiVersion: v2
+    created: "2025-10-15T20:17:12.734260294Z"
+    dependencies:
+    - name: vault
+      repository: https://helm.releases.hashicorp.com
+      version: ^0.x.x
+    description: HashiCorp Vault - Secrets Operator with server
+    digest: d22a5ab958266aee1c51911a5875507f39162a7216b9e9fe9f3d94a0f6815f7c
+    name: vault-secrets
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/vault-secrets-0.3.1/vault-secrets-0.3.1.tgz
+    version: 0.3.1
+generated: "2025-10-15T20:17:12.734279359Z"
