@@ -54,7 +54,7 @@ N8N_SMTP_SENDER=your-email@yourdomain.com
 
 **Variable Explanations:**
 - `N8N_EMAIL_MODE`: Set to `smtp` to enable email functionality
-- `N8N_SMTP_HOST`: SMTP server hostname (use `smtp.zoho.com` for Zoho, not `smtppro.zoho.com`)
+- `N8N_SMTP_HOST`: SMTP server hostname (use `smtppro.zoho.com` for Zoho)
 - `N8N_SMTP_PORT`: SMTP port (465 for SSL, 587 for TLS)
 - `N8N_SMTP_SSL`: Enable SSL encryption (use `true` with port 465)
 - `N8N_SMTP_STARTTLS`: Enable STARTTLS (use `false` with port 465, `true` with port 587)
