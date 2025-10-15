@@ -43,10 +43,10 @@ For workflow notifications and user management emails:
 
 ```bash
 N8N_EMAIL_MODE=smtp
-N8N_SMTP_HOST=smtp.zoho.com
-N8N_SMTP_PORT=465
-N8N_SMTP_SSL=true
-N8N_SMTP_STARTTLS=false
+N8N_SMTP_HOST=smtppro.zoho.com
+N8N_SMTP_PORT=587
+N8N_SMTP_SSL=false
+N8N_SMTP_STARTTLS=true
 N8N_SMTP_USER=your-email@yourdomain.com
 N8N_SMTP_PASS=your-password-or-app-password
 N8N_SMTP_SENDER=your-email@yourdomain.com
@@ -55,12 +55,14 @@ N8N_SMTP_SENDER=your-email@yourdomain.com
 **Variable Explanations:**
 - `N8N_EMAIL_MODE`: Set to `smtp` to enable email functionality
 - `N8N_SMTP_HOST`: SMTP server hostname (use `smtppro.zoho.com` for Zoho)
-- `N8N_SMTP_PORT`: SMTP port (465 for SSL, 587 for TLS)
-- `N8N_SMTP_SSL`: Enable SSL encryption (use `true` with port 465)
-- `N8N_SMTP_STARTTLS`: Enable STARTTLS (use `false` with port 465, `true` with port 587)
+- `N8N_SMTP_PORT`: SMTP port (587 for TLS - recommended, 465 for SSL may be blocked)
+- `N8N_SMTP_SSL`: Enable SSL encryption (use `false` with port 587)
+- `N8N_SMTP_STARTTLS`: Enable STARTTLS (use `true` with port 587, `false` with port 465)
 - `N8N_SMTP_USER`: Your Zoho email address (the one you use to log in)
 - `N8N_SMTP_PASS`: Your Zoho password or app-specific password
 - `N8N_SMTP_SENDER`: The "From" email address (can be same as USER or different)
+
+> 💡 **Note**: Port 465 (SSL) is often blocked by cloud providers and firewalls. Port 587 (TLS) is recommended for better compatibility.
 
 > 💡 **Tip**: Use an app-specific password from your email provider instead of your main password for better security.
 
