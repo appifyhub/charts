@@ -22,6 +22,17 @@ app:
       prometheus.io/scrape: "true"
       prometheus.io/port: "5678"
       prometheus.io/path: "/metrics"
+  # Security context for n8n container
+  # n8n runs as the 'node' user (UID 1000) inside the container
+  # fsGroup ensures the mounted volume has the correct group ownership
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+
+  # Fallback: use init container if fsGroup doesn't work
+  # Set to true if you're still getting permission errors
+  useInitContainer: false
 
 # Persistent storage configuration
 persistence:
