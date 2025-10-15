@@ -88,3 +88,6 @@ $RECYCLE.BIN/
 continuous-deployment/argo/
 
 # End of custom rules
+
+# Claude-specific files
+.claude/

@@ -1,0 +1,28 @@
+Thank you for installing {{ .Chart.Name }}!
+
+Your n8n workflow automation platform has been deployed.
+
+To access n8n:
+
+  1. Get the application URL:
+     {{- if .Values.ingress.enabled }}
+     {{- if .Values.ingress.tls.enabled }}
+     https://{{ .Values.ingress.domain.prefix }}.{{ .Values.ingress.domain.base }}
+     {{- else }}
+     http://{{ .Values.ingress.domain.prefix }}.{{ .Values.ingress.domain.base }}
+     {{- end }}
+     {{- else }}
+     kubectl port-forward service/{{ .Release.Name }}-service {{ .Values.app.servicePort }}:{{ .Values.app.containerPort }}
+     Then access: http://localhost:{{ .Values.app.servicePort }}
+     {{- end }}
+
+  2. On first access, you'll be prompted to create an admin account.
+
+Important notes:
+
+  - Your n8n data is stored in a persistent volume at {{ .Values.persistence.mountPath }}
+  - Make sure to set N8N_ENCRYPTION_KEY in your secrets ({{ .Values.secrets.provider }})
+  - Regular backups of the persistent volume are recommended
+  - This deployment uses SQLite and supports only 1 replica (for multiple replicas, use PostgreSQL)
+
+For more information, visit: https://docs.n8n.io

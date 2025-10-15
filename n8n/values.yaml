@@ -1,0 +1,68 @@
+# Basic app configuration
+app:
+  name: n8n
+  image:
+    repository: docker.n8n.io/n8nio/n8n
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicas: 1
+  revisionHistoryLimit: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+  servicePort: 80
+  containerPort: 5678
+  monitors:
+    enabled: true
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "5678"
+      prometheus.io/path: "/metrics"
+
+# Persistent storage configuration
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: hcloud-volumes
+  mountPath: /home/node/.n8n
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: traefik
+  domain:
+    base: cloud.appifyhub.local
+    prefix: n8n
+  tls:
+    enabled: false
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.tls: "false"
+
+# Secret management
+secrets:
+  provider: doppler
+  doppler:
+    token: "" # Service Token, to be set at install time
+    project: n8n-cloud
+    config: local
+
+# Non-sensitive configuration
+config:
+  enabled: true
+  values:
+    # Timezone configuration
+    GENERIC_TIMEZONE: "Europe/Berlin"
+    TZ: "Europe/Berlin"
+    # Security configuration
+    N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
+    N8N_RUNNERS_ENABLED: "true"
+    # n8n configuration
+    N8N_PORT: "5678"
+    N8N_PROTOCOL: "http"
+    N8N_HOST: "n8n.cloud.appifyhub.local"
+    WEBHOOK_URL: "http://n8n.cloud.appifyhub.local/"
