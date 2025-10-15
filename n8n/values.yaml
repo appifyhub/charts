@@ -69,9 +69,21 @@ config:
     # Timezone configuration
     GENERIC_TIMEZONE: "Europe/Berlin"
     TZ: "Europe/Berlin"
+    # Database configuration (SQLite)
+    # SQLite pool size for read connections - improves performance
+    DB_SQLITE_POOL_SIZE: "10"
     # Security configuration
     N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
     N8N_RUNNERS_ENABLED: "true"
+    # Block access to environment variables from Code Node (recommended for security)
+    N8N_BLOCK_ENV_ACCESS_IN_NODE: "true"
+    # Disable bare repositories in Git Node (security)
+    N8N_GIT_NODE_DISABLE_BARE_REPOS: "true"
+    
+    # Proxy configuration (required for Traefik ingress)
+    # Tells n8n to trust the first proxy hop (Traefik) for X-Forwarded-For headers
+    N8N_PROXY_HOPS: "1"
+    
     # n8n configuration
     N8N_PORT: "5678"
     N8N_PROTOCOL: "http"
