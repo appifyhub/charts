@@ -36,6 +36,15 @@ entries:
     version: 0.3.1
   n8n:
   - apiVersion: v2
+    created: "2025-10-15T22:43:45.884942166Z"
+    description: The workflow automation platform n8n
+    digest: c4f67b97f6b11b0cf88c17472bfb71609fa81ce1574e1a78ad614b01ab6fc84d
+    name: n8n
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/n8n-0.2.4/n8n-0.2.4.tgz
+    version: 0.2.4
+  - apiVersion: v2
     created: "2025-10-15T22:08:20.591052981Z"
     description: The workflow automation platform n8n
     digest: 98006aae0206c4e16c277dee6d2c331560bac86cba85d6f83a88a8fe47673ce3
@@ -157,4 +166,4 @@ entries:
     urls:
     - https://github.com/appifyhub/charts/releases/download/vault-secrets-0.3.1/vault-secrets-0.3.1.tgz
     version: 0.3.1
-generated: "2025-10-15T22:08:20.591096883Z"
+generated: "2025-10-15T22:43:45.88497127Z"
