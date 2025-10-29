@@ -81,7 +81,7 @@ config:
     # Access control settings
     # Set to "PRIVATE" to disable public access (only authenticated users can create links)
     # Redirects will still work publicly, but only logged-in users can create links
-    PUBLIC_INSTANCE_MODE: "PRIVATE"
+    # PUBLIC_INSTANCE_MODE: "PRIVATE"
     
     # Restrict login to specific emails (semicolon-separated)
     # Example: "user1@example.com;user2@example.com"
