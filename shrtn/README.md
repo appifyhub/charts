@@ -119,7 +119,7 @@ helm upgrade shrtn appifyhub/shrtn \
 --set ingress.domain.prefix="shrtn" \
 --set config.values.ORIGIN="https://shrtn.realdomain.com" \
 --set ingress.tls.enabled=true \
---set-string ingress.annotations."traefik\.ingress\.kubernetes.io/router\.entrypoints"=websecure \
+--set-string ingress.annotations."traefik\.ingress\.kubernetes\.io/router\.entrypoints"=websecure \
 --set-string ingress.annotations."traefik\.ingress\.kubernetes\.io/router\.tls"=true \
 --set-string ingress.annotations."traefik\.ingress\.kubernetes\.io/router\.tls\.certresolver"=letsencrypt
 ```
