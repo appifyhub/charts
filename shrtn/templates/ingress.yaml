@@ -28,4 +28,3 @@ spec:
         - {{ .Values.ingress.domain.prefix }}.{{ .Values.ingress.domain.base }}
   {{- end }}
 {{- end }}
-

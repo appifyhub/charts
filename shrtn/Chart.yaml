@@ -3,4 +3,3 @@ name: shrtn
 description: Self-hosted URL shortener (shrtn.io)
 version: 0.1.1
 type: application
-

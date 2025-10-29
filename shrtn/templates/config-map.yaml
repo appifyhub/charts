@@ -15,4 +15,3 @@ data:
   {{- toYaml .Values.config.values | nindent 2 }}
   {{- end }}
 {{- end }}
-

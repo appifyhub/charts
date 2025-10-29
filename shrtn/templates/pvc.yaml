@@ -9,12 +9,6 @@ metadata:
     instance: {{ .Release.Name }}
     app.kubernetes.io/name: {{ .Values.app.name }}
     app.kubernetes.io/instance: {{ .Release.Name }}
-  {{- if .Values.persistence.annotations }}
-  annotations:
-    {{- range $key, $value := .Values.persistence.annotations }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
-  {{- end }}
 
 spec:
   accessModes:
@@ -24,4 +18,3 @@ spec:
     requests:
       storage: {{ .Values.persistence.size }}
 {{- end }}
-

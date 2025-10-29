@@ -27,4 +27,3 @@ Important notes:
   - Regular backups of the persistent volume are recommended
 
 For more information, visit: https://github.com/CordlessWool/shrtn
-

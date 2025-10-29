@@ -94,20 +94,10 @@ config:
     # Enable private links feature
     # PUBLIC_FEATURE_PRIVATE_LINKS: "true"
     
-    # Mail configuration (optional - sensitive values should be set via secrets)
-    # Available providers: smtp, mailgun, mailpit
-    MAIL_PROVIDER: "mailgun"
-    # MAIL_HOST: "smtp.example.com"
-    # MAIL_PORT: "465"
-    # MAIL_USER: "noreply@example.com"
-    # MAIL_FROM: "noreply@example.com"
-    # MAIL_PASS: ""  # Set via secrets, not config map
-
-    # Mailgun configuration (when MAIL_PROVIDER=mailgun)
-    MAILGUN_API_KEY: ""  # Set via secrets
-    MAILGUN_DOMAIN: "mailgun.appifyhub.local"
-    MAILGUN_URL: "https://api.mailgun.net"
-    
-    # Mailpit configuration (when MAIL_PROVIDER=mailpit, for development)
-    # MAILPIT_DOMAIN: "http://localhost:8025"
-
+    # Mail configuration - set ALL mail variables in Doppler secrets, NOT here
+    # The ConfigMap will override Doppler values if set here
+    # Set these in Doppler:
+    # - MAIL_PROVIDER: "smtp", "mailgun", or "mailpit"
+    # - For SMTP: MAIL_HOST, MAIL_PORT, MAIL_USER, MAIL_FROM, MAIL_PASS
+    # - For Mailgun: MAILGUN_API_KEY, MAILGUN_DOMAIN, MAILGUN_URL
+    # - For Mailpit: MAILPIT_DOMAIN

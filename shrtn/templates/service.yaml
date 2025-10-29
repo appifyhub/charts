@@ -20,4 +20,3 @@ spec:
     - port: {{ .Values.app.servicePort }}
       targetPort: {{ .Values.app.containerPort }}
       protocol: TCP
-
