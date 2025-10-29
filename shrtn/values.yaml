@@ -20,11 +20,11 @@ app:
     enabled: false
     annotations: {}
   # Security context for shrtn container
-  # shrtn runs as a non-root user inside the container
+  # shrtn container needs to run as root to set up permissions
   securityContext:
-    runAsUser: 1000
-    runAsGroup: 1000
-    fsGroup: 1000
+    runAsUser: 0
+    runAsGroup: 0
+    fsGroup: 0
 
   # Fallback: use init container if fsGroup doesn't work
   # Set to true if you're still getting permission errors

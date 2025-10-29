@@ -70,9 +70,6 @@ spec:
         - name: {{ .Values.app.name }}
           image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
           imagePullPolicy: {{ .Values.app.image.pullPolicy }}
-          securityContext:
-            runAsUser: {{ .Values.app.securityContext.runAsUser }}
-            runAsGroup: {{ .Values.app.securityContext.runAsGroup }}
           {{- if .Values.persistence.enabled }}
           volumeMounts:
             - name: shrtn-data
