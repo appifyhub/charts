@@ -1,0 +1,30 @@
+Thank you for installing {{ .Chart.Name }}!
+
+Your shrtn URL shortener has been deployed.
+
+To access shrtn:
+
+  1. Get the application URL:
+     {{- if .Values.ingress.enabled }}
+     {{- if .Values.ingress.tls.enabled }}
+     https://{{ .Values.ingress.domain.prefix }}.{{ .Values.ingress.domain.base }}
+     {{- else }}
+     http://{{ .Values.ingress.domain.prefix }}.{{ .Values.ingress.domain.base }}
+     {{- end }}
+     {{- else }}
+     kubectl port-forward service/{{ .Release.Name }}-service {{ .Values.app.servicePort }}:{{ .Values.app.containerPort }}
+     Then access: http://localhost:{{ .Values.app.servicePort }}
+     {{- end }}
+
+  2. On first access, you'll be able to start shortening URLs immediately.
+
+Important notes:
+
+  - Your shrtn data is stored in a persistent volume at {{ .Values.persistence.mountPath }}
+  - Database configuration can be set via DATABASE_URL environment variable (defaults to SQLite)
+  - For production, consider using PostgreSQL by setting DATABASE_URL in your secrets ({{ .Values.secrets.provider }})
+  - Mail configuration (MAIL_PROVIDER, MAIL_*, etc.) should be set in your secrets for email functionality
+  - Regular backups of the persistent volume are recommended
+
+For more information, visit: https://github.com/CordlessWool/shrtn
+

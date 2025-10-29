@@ -1,0 +1,113 @@
+# Basic app configuration
+app:
+  name: shrtn
+  image:
+    repository: ghcr.io/cordlesswool/shrtn
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicas: 1
+  revisionHistoryLimit: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  servicePort: 80
+  containerPort: 3001
+  monitors:
+    enabled: false
+    annotations: {}
+  # Security context for shrtn container
+  # shrtn runs as a non-root user inside the container
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+
+  # Fallback: use init container if fsGroup doesn't work
+  # Set to true if you're still getting permission errors
+  useInitContainer: false
+
+# Persistent storage configuration
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: hcloud-volumes
+  mountPath: /data
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: traefik
+  domain:
+    base: cloud.appifyhub.local
+    prefix: shrtn
+  tls:
+    enabled: false
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.tls: "false"
+
+# Secret management
+secrets:
+  provider: doppler
+  doppler:
+    token: "" # Service Token, to be set at install time
+    project: shrtn-cloud
+    config: local
+
+# Non-sensitive configuration
+config:
+  enabled: true
+  values:
+    # Base URL for the public-facing site
+    # Could also be provided by request headers, but setting explicitly is recommended
+    ORIGIN: "http://shrtn.cloud.appifyhub.local"
+    
+    # Database configuration
+    # Default: SQLite file (file:sqlite_file_name.db)
+    # For PostgreSQL: postgresql://user:password@host:5432/database
+    # For Cloudflare D1: See shrtn documentation for libSQL connection string
+    # Note: Sensitive credentials should be set via secrets, not config map
+    # DATABASE_URL: "file:sqlite_file_name.db"
+    
+    # Public TTL settings for temporary and user-generated content
+    # Possible values: HOUR, DAY, WEEK, MONTH, YEAR, EVER
+    PUBLIC_TTL_TEMP: "HOUR"  # Temporary content expires after 1 hour
+    PUBLIC_TTL_USER: "EVER"  # User-generated content never expires
+    
+    # Access control settings
+    # Set to "PRIVATE" to disable public access (only authenticated users can create links)
+    # Redirects will still work publicly, but only logged-in users can create links
+    PUBLIC_INSTANCE_MODE: "PRIVATE"
+    
+    # Restrict login to specific emails (semicolon-separated)
+    # Example: "user1@example.com;user2@example.com"
+    ALLOWED_LOGIN_EMAILS: "admin@appifyhub.local"
+    
+    # Restrict login to specific email domains (semicolon-separated)
+    # Example: "example.com;anotherdomain.com"
+    # ALLOWED_LOGIN_DOMAINS: ""
+    
+    # Enable private links feature
+    # PUBLIC_FEATURE_PRIVATE_LINKS: "true"
+    
+    # Mail configuration (optional - sensitive values should be set via secrets)
+    # Available providers: smtp, mailgun, mailpit
+    MAIL_PROVIDER: "mailgun"
+    # MAIL_HOST: "smtp.example.com"
+    # MAIL_PORT: "465"
+    # MAIL_USER: "noreply@example.com"
+    # MAIL_FROM: "noreply@example.com"
+    # MAIL_PASS: ""  # Set via secrets, not config map
+
+    # Mailgun configuration (when MAIL_PROVIDER=mailgun)
+    MAILGUN_API_KEY: ""  # Set via secrets
+    MAILGUN_DOMAIN: "mailgun.appifyhub.local"
+    MAILGUN_URL: "https://api.mailgun.net"
+    
+    # Mailpit configuration (when MAIL_PROVIDER=mailpit, for development)
+    # MAILPIT_DOMAIN: "http://localhost:8025"
+

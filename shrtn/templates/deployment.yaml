@@ -1,0 +1,126 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Values.app.name }}
+    instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Values.app.name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  annotations:
+    {{- if eq .Values.secrets.provider "doppler" }}
+    secrets.doppler.com/reload: "true"
+    {{- end }}
+
+spec:
+  replicas: {{ .Values.app.replicas }}
+  revisionHistoryLimit: {{ .Values.app.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      app: {{ .Values.app.name }}
+      instance: {{ .Release.Name }}
+      app.kubernetes.io/name: {{ .Values.app.name }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app.name }}
+        instance: {{ .Release.Name }}
+        app.kubernetes.io/name: {{ .Values.app.name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        {{- if .Values.app.monitors.enabled }}
+        {{- range $key, $value := .Values.app.monitors.annotations }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+        {{- end }}
+    spec:
+      {{- if .Values.persistence.enabled }}
+      volumes:
+        - name: shrtn-data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-data
+      {{- end }}
+      
+      # Security context for the pod - try fsGroup first
+      securityContext:
+        fsGroup: {{ .Values.app.securityContext.fsGroup }}
+      
+      # Optional init container to fix permissions (fallback if fsGroup doesn't work)
+      {{- if and .Values.persistence.enabled .Values.app.useInitContainer }}
+      initContainers:
+        - name: fix-permissions
+          image: busybox:1.35
+          command: ['sh', '-c']
+          args:
+            - |
+              echo "Fixing permissions for shrtn data directory..."
+              chown -R 1000:1000 {{ .Values.persistence.mountPath }}
+              chmod -R 755 {{ .Values.persistence.mountPath }}
+              echo "Permissions fixed successfully"
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: shrtn-data
+              mountPath: {{ .Values.persistence.mountPath }}
+      {{- end }}
+
+      containers:
+        - name: {{ .Values.app.name }}
+          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+          imagePullPolicy: {{ .Values.app.image.pullPolicy }}
+          securityContext:
+            runAsUser: {{ .Values.app.securityContext.runAsUser }}
+            runAsGroup: {{ .Values.app.securityContext.runAsGroup }}
+          {{- if .Values.persistence.enabled }}
+          volumeMounts:
+            - name: shrtn-data
+              mountPath: {{ .Values.persistence.mountPath }}
+          {{- end }}
+          envFrom:
+          {{- if eq .Values.secrets.provider "doppler" }}
+            - secretRef:
+                name: {{ .Release.Name }}-doppler-secret
+          {{- end }}
+          {{- if .Values.config.enabled }}
+            - configMapRef:
+                name: {{ .Release.Name }}-config
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.app.containerPort }}
+              protocol: TCP
+          resources:
+            requests:
+              cpu: "{{ .Values.app.resources.requests.cpu }}"
+              memory: "{{ .Values.app.resources.requests.memory }}"
+            limits:
+              cpu: "{{ .Values.app.resources.limits.cpu }}"
+              memory: "{{ .Values.app.resources.limits.memory }}"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.app.containerPort }}
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.app.containerPort }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 10
+          # Startup probe to ensure shrtn is fully ready before marking as healthy
+          startupProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.app.containerPort }}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 30
+
