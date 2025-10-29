@@ -133,6 +133,16 @@ entries:
     urls:
     - https://github.com/appifyhub/charts/releases/download/secrets-check-0.3.1/secrets-check-0.3.1.tgz
     version: 0.3.1
+  shrtn:
+  - apiVersion: v2
+    created: "2025-10-29T21:51:58.466876835Z"
+    description: Self-hosted URL shortener (shrtn.io)
+    digest: 17861659cc08db60e7f1b4145a9be53c022991efb6bdf459ec6d23c55cc24aff
+    name: shrtn
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/shrtn-0.1.0/shrtn-0.1.0.tgz
+    version: 0.1.0
   the-agent-api:
   - apiVersion: v2
     created: "2025-10-15T20:17:12.571732728Z"
@@ -166,4 +176,4 @@ entries:
     urls:
     - https://github.com/appifyhub/charts/releases/download/vault-secrets-0.3.1/vault-secrets-0.3.1.tgz
     version: 0.3.1
-generated: "2025-10-15T22:43:45.88497127Z"
+generated: "2025-10-29T21:51:58.466902102Z"
