@@ -64,7 +64,7 @@ config:
   values:
     # Base URL for the public-facing site
     # Could also be provided by request headers, but setting explicitly is recommended
-    ORIGIN: "http://shrtn.cloud.appifyhub.local"
+    # ORIGIN: "http://shrtn.cloud.appifyhub.local" # or set via secrets
     
     # Database configuration
     # Default: SQLite file (file:sqlite_file_name.db)
@@ -85,7 +85,7 @@ config:
     
     # Restrict login to specific emails (semicolon-separated)
     # Example: "user1@example.com;user2@example.com"
-    ALLOWED_LOGIN_EMAILS: "admin@appifyhub.local"
+    # ALLOWED_LOGIN_EMAILS: "admin@appifyhub.local"
     
     # Restrict login to specific email domains (semicolon-separated)
     # Example: "example.com;anotherdomain.com"
