@@ -135,6 +135,15 @@ entries:
     version: 0.3.1
   shrtn:
   - apiVersion: v2
+    created: "2025-10-29T23:25:07.793167741Z"
+    description: Self-hosted URL shortener (shrtn.io)
+    digest: 67b26c632c67adb6888056ae2f18efffa55a38a31a8907b3a5aab6efbccf9bc1
+    name: shrtn
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/shrtn-0.1.4/shrtn-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
     created: "2025-10-29T23:10:54.725734973Z"
     description: Self-hosted URL shortener (shrtn.io)
     digest: 51dce578a4eccaad3c10cb5ec67ec01066ba89df184ec8ac84d8adb7dd70a8a2
@@ -203,4 +212,4 @@ entries:
     urls:
     - https://github.com/appifyhub/charts/releases/download/vault-secrets-0.3.1/vault-secrets-0.3.1.tgz
     version: 0.3.1
-generated: "2025-10-29T23:10:54.725764278Z"
+generated: "2025-10-29T23:25:07.793200783Z"
