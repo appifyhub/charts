@@ -19,11 +19,11 @@ app:
   monitors:
     enabled: false
     annotations: {}
-  # Security context for container/pod (Shlink runs as non-root)
+  # Security context for container/pod
+  # Shlink 4.x runs as non-root by default - let the image define the user
+  # Only set fsGroup to ensure volume permissions work correctly
   securityContext:
-    runAsUser: 1000
-    runAsGroup: 1000
-    fsGroup: 1000
+    fsGroup: 1001
 
   # Fallback: use init container if fsGroup doesn't work
   # Set to true if you're still getting permission errors
@@ -34,7 +34,7 @@ persistence:
   enabled: true
   size: 10Gi
   storageClass: hcloud-volumes
-  mountPath: /etc/shlink
+  mountPath: /etc/shlink/data
 
 # Ingress configuration
 ingress:
