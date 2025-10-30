@@ -1,8 +1,8 @@
 Thank you for installing {{ .Chart.Name }}!
 
-Your shrtn URL shortener has been deployed.
+Your URL shortener (powered by Shlink) has been deployed.
 
-To access shrtn:
+To access the service:
 
   1. Get the application URL:
      {{- if .Values.ingress.enabled }}
@@ -16,14 +16,14 @@ To access shrtn:
      Then access: http://localhost:{{ .Values.app.servicePort }}
      {{- end }}
 
-  2. On first access, you'll be able to start shortening URLs immediately.
+  2. Authenticate using your INITIAL_API_KEY from your secrets ({{ .Values.secrets.provider }})
 
 Important notes:
 
-  - Your shrtn data is stored in a persistent volume at {{ .Values.persistence.mountPath }}
-  - Database configuration can be set via DATABASE_URL environment variable (defaults to SQLite)
-  - For production, consider using PostgreSQL by setting DATABASE_URL in your secrets ({{ .Values.secrets.provider }})
-  - Mail configuration (MAIL_PROVIDER, MAIL_*, etc.) should be set in your secrets for email functionality
+  - Your data is stored in a persistent volume at {{ .Values.persistence.mountPath }}
+  - Using SQLite database by default (suitable for small to medium workloads)
+  - For production and high availability, consider using PostgreSQL with DB_* environment variables
+  - GeoLite2 license key (GEOLITE_LICENSE_KEY) is required for geolocation features
   - Regular backups of the persistent volume are recommended
 
-For more information, visit: https://github.com/CordlessWool/shrtn
+For more information, visit: https://shlink.io

@@ -1,0 +1,27 @@
+{{- if .Values.config.enabled }}
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: {{ .Release.Name }}-config
+  labels:
+    app: {{ .Values.app.name }}
+    instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Values.app.name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+
+data:
+  # Computed defaults (overridable via config.values)
+  {{- $cfg := .Values.config.values | default dict }}
+  DEFAULT_DOMAIN: {{ default (printf "%s.%s" .Values.ingress.domain.prefix .Values.ingress.domain.base) (index $cfg "DEFAULT_DOMAIN") | quote }}
+  IS_HTTPS_ENABLED: {{ default (ternary "true" "false" .Values.ingress.tls.enabled) (index $cfg "IS_HTTPS_ENABLED") | quote }}
+
+  # Additional non-sensitive config values (excluding computed keys if provided above)
+  {{- if $cfg }}
+  {{- range $key, $value := $cfg }}
+  {{- if and (ne $key "DEFAULT_DOMAIN") (ne $key "IS_HTTPS_ENABLED") }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+{{- end }}

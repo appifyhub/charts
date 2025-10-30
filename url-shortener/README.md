@@ -1,10 +1,10 @@
-# shrtn URL Shortener
+# URL Shortener (Shlink)
 
-This directory contains the Kubernetes (K8s) configuration and Helm chart manifests for deploying shrtn, a self-hosted URL shortener. Learn more at [shrtn.io](https://shrtn.io) and [GitHub](https://github.com/CordlessWool/shrtn).
+This directory contains the Kubernetes (K8s) configuration and Helm chart manifests for deploying a URL shortener powered by Shlink. Learn more at [Shlink](https://shlink.io).
 
 ### How to use this?
 
-Most of the prerequisites are available for exploration in the [root-level README](../README.md). This document will focus only on the specific steps needed to deploy shrtn.
+Most of the prerequisites are available for exploration in the [root-level README](../README.md). This document will focus only on the specific steps needed to deploy the URL shortener.
 
 Prerequisites:
 
@@ -17,30 +17,20 @@ Prerequisites:
 
 ## Installation Guide
 
-This URL shortener is best deployed using a Helm chart, which is located next to this guide. The chart is designed to be installed into a K8s cluster, and it will create all of the necessary resources for shrtn to run.
+This URL shortener is best deployed using a Helm chart, which is located next to this guide. The chart is designed to be installed into a K8s cluster, and it will create all of the necessary resources for Shlink to run.
 
-This chart uses SQLite as the database backend by default, which is stored in a persistent volume. This is suitable for small to medium workloads. For production environments with high availability requirements, consider using PostgreSQL or Cloudflare D1 instead (see shrtn documentation for details).
+This chart uses SQLite as the database backend by default, which is stored in a persistent volume. This is suitable for small to medium workloads. For production environments with high availability requirements, consider using PostgreSQL later (see Shlink documentation for details).
 
 Going forward, we will assume that you want to manage secrets using [Doppler](https://www.doppler.com). If you don't want to use Doppler, you can create the secrets manually using the `kubectl create secret` command and disable Doppler via Helm value directives. More details on how Doppler manages secrets can be found in the [Secrets Check](../secrets-check/README.md) guide.
 
 #### Required Secrets Configuration
 
-Before deploying shrtn, you need to set up the following secrets in your Doppler project (or K8s secrets if not using Doppler):
+Before deploying the URL shortener, you need to set up the following secrets in your Doppler project (or K8s secrets if not using Doppler):
 
-##### Core Required Configuration
+1. `GEOLITE_LICENSE_KEY` — Maxmind GeoLite2 license key. See [GeoLite2 license key](https://shlink.io/documentation/geolite-license-key/).
+2. `INITIAL_API_KEY` — Bootstrap API key for Shlink. See [Install via Docker](https://shlink.io/documentation/install-docker-image/).
 
-1. **`ORIGIN`** - Base URL for the public-facing site
-   - Example: `http://shrtn.example.com` or `https://shrtn.example.com`
-   - This is also available as a config value, but can be overridden via secrets
-   - Required for proper URL generation
-
-2. **`DATABASE_URL`** (Optional) - Database connection string
-   - Default: SQLite file (`file:sqlite_file_name.db`) - stored in persistent volume
-   - For PostgreSQL: `postgresql://user:password@host:5432/database`
-   - For Cloudflare D1: See shrtn documentation for libSQL connection string
-   - **Note**: If using PostgreSQL, include credentials here or set via secrets
-
-For other configuration options and secrets, see the `values.yaml` file or the shortener's documentation.
+For other configuration options and secrets, see the `values.yaml` file or the Shlink documentation.
 
 ### The basic setup
 
@@ -50,22 +40,20 @@ Let's install the chart:
 # Prepare a dedicated namespace (if not already there)
 kubectl create namespace delete-me
 # Install the service from there
-helm install shrtn appifyhub/shrtn \
+helm install url-shortener appifyhub/url-shortener \
   --namespace delete-me \
   --set secrets.provider="none"
 ```
 
-This basic setup **does not** automatically manage your secrets, and expects you to have them provided next to your new deployment. The ORIGIN will default to the value in `values.yaml` (`http://shrtn.cloud.appifyhub.local`).
+This basic setup does not automatically manage your secrets. The `DEFAULT_DOMAIN` and `IS_HTTPS_ENABLED` values will be computed from the chart's `ingress.*` configuration by default.
 
-The service created here will be exposed over HTTP (not HTTPS) at `http://shrtn.cloud.appifyhub.local`. Note the `.local` top-level domain: this is a fake domain that is used for development and testing. You can change this to a real domain in the next steps. In order to access the service on this fake domain, you need to add it to your local hosts file (e.g., `/etc/hosts`), as explained in the [Echo server](../echo/README.md) guide. In the next step, we will explore adding the secrets manager and a real domain.
-
-**Important**: Short URL redirects (like `https://shrtn.example.com/abc123`) will always work publicly - only the creation/admin interface will be restricted.
+The service here will typically be exposed over HTTP (TLS is terminated at Traefik/edge). In production behind Traefik/Cloudflare, set `IS_HTTPS_ENABLED=true` to ensure Shlink generates correct HTTPS links.
 
 Here's how you can undo this installation if you want to start over:
 
 ```bash
-# Uninstall shrtn
-helm uninstall shrtn --namespace delete-me
+# Uninstall the URL shortener
+helm uninstall url-shortener --namespace delete-me
 # Remove the namespace if you don't need it anymore
 kubectl delete namespace delete-me
 ```
@@ -86,22 +74,21 @@ Because a configuration based on a real domain is not assumed as the default, re
 # Prepare a dedicated namespace (if not already there)
 kubectl create namespace staging
 # Install the service from there - assuming you want it in a 'staging' namespace
-helm install shrtn appifyhub/shrtn \
+helm install url-shortener appifyhub/url-shortener \
 --namespace staging \
 --set app.image.tag="latest" \
---set secrets.doppler.project="shrtn-cloud" \
+--set secrets.doppler.project="url-shortener-cloud" \
 --set secrets.doppler.config="staging" \
 --set secrets.doppler.token="dp.st.staging.your-actual-token-here" \
 --set ingress.domain.base="realdomain.com" \
---set ingress.domain.prefix="shrtn" \
---set config.values.ORIGIN="http://shrtn.realdomain.com"
+--set ingress.domain.prefix="url-shortener"
 ```
 
 Note that this setup is also implicitly enabling Doppler's secrets manager, which will automatically inject the secrets into your pods. For more information on how to set up Doppler, check the [Secrets Check](../secrets-check/README.md) guide.
 
 > 💡 &nbsp; The deployment is configured to reload its secrets every 5 minutes. In addition, the deployment might create multiple pods while booting up. As soon as the pod with the secrets injected is up and running, the other pod will be shut down (potentially with some logged errors). This is normal behavior.
 
-Make sure your Doppler project contains all the required secrets (at minimum `ORIGIN`) before deploying.
+Make sure your Doppler project contains at least `GEOLITE_LICENSE_KEY` and `INITIAL_API_KEY` before deploying.
 
 ### TLS and HTTPS
 
@@ -109,15 +96,14 @@ The configurations shown so far are not using TLS or HTTPS. This is fine for dev
 
 ```bash
 # Let's upgrade our existing Helm release to include TLS and HTTPS
-helm upgrade shrtn appifyhub/shrtn \
+helm upgrade url-shortener appifyhub/url-shortener \
 --namespace staging \
 --set app.image.tag="latest" \
---set secrets.doppler.project="shrtn-cloud" \
+--set secrets.doppler.project="url-shortener-cloud" \
 --set secrets.doppler.config="staging" \
 --set secrets.doppler.token="dp.st.staging.your-actual-token-here" \
 --set ingress.domain.base="realdomain.com" \
---set ingress.domain.prefix="shrtn" \
---set config.values.ORIGIN="https://shrtn.realdomain.com" \
+--set ingress.domain.prefix="url-shortener" \
 --set ingress.tls.enabled=true \
 --set-string ingress.annotations."traefik\.ingress\.kubernetes\.io/router\.entrypoints"=websecure \
 --set-string ingress.annotations."traefik\.ingress\.kubernetes\.io/router\.tls"=true \
@@ -126,46 +112,40 @@ helm upgrade shrtn appifyhub/shrtn \
 
 > 💡 &nbsp; The deployment here relies on Traefik's integration with [Let's Encrypt](https://letsencrypt.org), a widely-used provider of free TLS certificates. The chart is now configured to use the `websecure` entrypoint, which is the default entrypoint for HTTPS traffic in Traefik. If you are using a different ingress controller, you need to adjust accordingly yourself.
 
-Note that we've also updated the `ORIGIN` configuration value to use HTTPS. This is important for shortened URLs to work correctly.
+Also set `IS_HTTPS_ENABLED=true` so Shlink generates HTTPS links.
+
 
 It may take a few minutes for the TLS certificate to be issued and for the service to be accessible over HTTPS.
 
 #### Additional configuration
 
-In addition to the install values we changed above using `--set`, there are many other configuration options available in the chart (such as rollback history, resource consumption, TTL settings, etc). You can see all of them in the `values.yaml` file.
+In addition to the install values we changed above using `--set`, there are many other configuration options available in the chart (such as rollback history, resource consumption, TTL settings, etc).
+
+See `values.yaml` for overridable non-sensitive config and future DB/Redis toggles.
 
 ## Important Considerations
 
 ### Backups
 
-Since shrtn uses SQLite stored in a persistent volume by default, it's critical to backup your data regularly. You can backup the persistent volume using your cloud provider's snapshot features or by using Kubernetes backup solutions like Velero.
+Since Shlink uses SQLite stored in a persistent volume by default, it's critical to backup your data regularly. You can backup the persistent volume using your cloud provider's snapshot features or by using Kubernetes backup solutions like Velero.
 
-To manually backup shrtn data:
+To manually backup data:
 
 ```bash
 # Get the pod name
-POD_NAME=$(kubectl get pods -n staging -l app=shrtn -o jsonpath='{.items[0].metadata.name}')
+POD_NAME=$(kubectl get pods -n staging -l app=url-shortener -o jsonpath='{.items[0].metadata.name}')
 
 # Copy the data directory from the pod
-kubectl cp staging/$POD_NAME:/data ./shrtn-backup
+kubectl cp staging/$POD_NAME:/etc/shlink ./url-shortener-backup
 ```
 
 ### Scaling Limitations
 
-This chart uses SQLite as the database backend by default, which means:
+This chart uses SQLite by default, which means:
 
-  - **Only 1 replica is supported** - SQLite doesn't support multiple concurrent connections from different pods
-  - For high availability and horizontal scaling, you need to configure shrtn to use PostgreSQL or Cloudflare D1 instead
-  - See the [shrtn documentation](https://github.com/CordlessWool/shrtn) for database setup options
+  - Only 1 replica is supported
+  - For high availability and horizontal scaling, you need to move to Postgres and configure a shared Redis/Valkey for locks
 
 ### Persistent Volume
 
-The chart creates a persistent volume of 5Gi by default. This should be sufficient for most small to medium deployments. If you're planning to:
-
-  - Store a large number of shortened URLs
-  - Keep extensive analytics data
-  - Store user-generated content
-
-You should increase the volume size by setting `--set persistence.size=10Gi` (or larger) during installation, if needed.
-
-> ⚠️ &nbsp; **Note**: You cannot easily resize a persistent volume after creation in most cloud environments. Plan your storage needs accordingly.
+The chart creates a persistent volume of 10Gi by default. Increase via `--set persistence.size=20Gi` if needed.

@@ -38,7 +38,7 @@ spec:
     spec:
       {{- if .Values.persistence.enabled }}
       volumes:
-        - name: shrtn-data
+        - name: url-shortener-data
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-data
       {{- end }}
@@ -55,14 +55,14 @@ spec:
           command: ['sh', '-c']
           args:
             - |
-              echo "Fixing permissions for shrtn data directory..."
+              echo "Fixing permissions for data directory..."
               chown -R 1000:1000 {{ .Values.persistence.mountPath }}
               chmod -R 755 {{ .Values.persistence.mountPath }}
               echo "Permissions fixed successfully"
           securityContext:
             runAsUser: 0
           volumeMounts:
-            - name: shrtn-data
+            - name: url-shortener-data
               mountPath: {{ .Values.persistence.mountPath }}
       {{- end }}
 
@@ -72,7 +72,7 @@ spec:
           imagePullPolicy: {{ .Values.app.image.pullPolicy }}
           {{- if .Values.persistence.enabled }}
           volumeMounts:
-            - name: shrtn-data
+            - name: url-shortener-data
               mountPath: {{ .Values.persistence.mountPath }}
           {{- end }}
           envFrom:
@@ -97,7 +97,7 @@ spec:
               memory: "{{ .Values.app.resources.limits.memory }}"
           livenessProbe:
             httpGet:
-              path: /
+              path: /rest/health
               port: {{ .Values.app.containerPort }}
             initialDelaySeconds: 30
             periodSeconds: 30
@@ -105,16 +105,16 @@ spec:
             failureThreshold: 5
           readinessProbe:
             httpGet:
-              path: /
+              path: /rest/health
               port: {{ .Values.app.containerPort }}
             initialDelaySeconds: 10
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 10
-          # Startup probe to ensure shrtn is fully ready before marking as healthy
+          # Startup probe to ensure the service is fully ready before marking as healthy
           startupProbe:
             httpGet:
-              path: /
+              path: /rest/health
               port: {{ .Values.app.containerPort }}
             initialDelaySeconds: 10
             periodSeconds: 5

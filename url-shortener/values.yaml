@@ -1,0 +1,78 @@
+# Basic app configuration
+app:
+  name: url-shortener
+  image:
+    repository: shlinkio/shlink
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicas: 1
+  revisionHistoryLimit: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  servicePort: 80
+  containerPort: 8080
+  monitors:
+    enabled: false
+    annotations: {}
+  # Security context for container/pod (Shlink runs as non-root)
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+
+  # Fallback: use init container if fsGroup doesn't work
+  # Set to true if you're still getting permission errors
+  useInitContainer: false
+
+# Persistent storage configuration
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: hcloud-volumes
+  mountPath: /etc/shlink
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: traefik
+  domain:
+    base: cloud.appifyhub.local
+    prefix: url-shortener
+  tls:
+    enabled: false
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.tls: "false"
+
+# Secret management
+secrets:
+  provider: doppler
+  doppler:
+    token: "" # Service Token, to be set at install time
+    project: url-shortener-cloud
+    config: local
+
+# Non-sensitive configuration
+config:
+  enabled: true
+  values:
+    # Shlink non-sensitive config overrides (optional)
+    # By default, these are computed in the ConfigMap:
+    # - DEFAULT_DOMAIN: <ingress.domain.prefix>.<ingress.domain.base>
+    # - IS_HTTPS_ENABLED: true if ingress.tls.enabled, else false
+
+    # DEFAULT_DOMAIN: "url-shortener.cloud.appifyhub.local"
+    # IS_HTTPS_ENABLED: "false"
+
+    # Future toggles (leave unset unless needed):
+    # REDIS_SERVERS: "redis:6379"            # for multi-replica locking
+    # DB_DRIVER: "postgres"                  # when moving off SQLite
+    # DB_HOST: "postgres.default.svc.cluster.local"
+    # DB_PORT: "5432"
+    # DB_NAME: "shlink"
+    # Note: credentials like DB_USER/DB_PASSWORD must be set via secrets, not here

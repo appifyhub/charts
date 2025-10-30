@@ -1,5 +1,0 @@
-apiVersion: v2
-name: shrtn
-description: Self-hosted URL shortener (shrtn.io)
-version: 0.1.5
-type: application
