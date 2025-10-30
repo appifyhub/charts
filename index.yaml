@@ -209,6 +209,15 @@ entries:
     version: 0.6.1
   url-shortener:
   - apiVersion: v2
+    created: "2025-10-30T22:27:27.218555311Z"
+    description: URL Shortener
+    digest: ccd305159a41404cb00ecd6bad36c7da2f813bbde419bf4240a4a45ceaaa60ae
+    name: url-shortener
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/url-shortener-1.0.1/url-shortener-1.0.1.tgz
+    version: 1.0.1
+  - apiVersion: v2
     created: "2025-10-30T22:16:35.314189941Z"
     description: URL Shortener
     digest: fc8955ec98f04a8b2f444507d308d14028f5869bd2a0ca3a64e93fb744358d81
@@ -231,4 +240,4 @@ entries:
     urls:
     - https://github.com/appifyhub/charts/releases/download/vault-secrets-0.3.1/vault-secrets-0.3.1.tgz
     version: 0.3.1
-generated: "2025-10-30T22:16:35.314236949Z"
+generated: "2025-10-30T22:27:27.218584966Z"
