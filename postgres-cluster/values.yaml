@@ -27,6 +27,10 @@ cnpg:
   parameters:
     max_connections: "50"
     shared_buffers: "16MB"
+    # WAL management - prevents disk from filling up
+    archive_mode: "off"
+    wal_keep_size: "512MB"
+    max_wal_size: "1GB"
 
   # Bootstrap configuration (to edit via Helm CLI)
   bootstrap:

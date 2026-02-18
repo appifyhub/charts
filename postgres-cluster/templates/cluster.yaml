@@ -8,6 +8,9 @@ spec:
     parameters:
       max_connections: "{{ .Values.cnpg.parameters.max_connections }}"
       shared_buffers: "{{ .Values.cnpg.parameters.shared_buffers }}"
+      archive_mode: "{{ .Values.cnpg.parameters.archive_mode }}"
+      wal_keep_size: "{{ .Values.cnpg.parameters.wal_keep_size }}"
+      max_wal_size: "{{ .Values.cnpg.parameters.max_wal_size }}"
   resources:
     requests:
       memory: {{ .Values.cnpg.resources.requests.memory | quote }}
