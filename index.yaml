@@ -110,6 +110,20 @@ entries:
     version: 0.3.1
   postgres-cluster:
   - apiVersion: v2
+    created: "2026-02-18T12:14:14.375368674Z"
+    dependencies:
+    - alias: operator
+      name: cloudnative-pg
+      repository: https://cloudnative-pg.github.io/charts
+      version: ^0.x.x
+    description: CloudNative PostgreSQL cluster
+    digest: eb4841e7b0358aeddc5c5916da18cf515ec8e27a9f88628d8d9d71f37b86cfbe
+    name: postgres-cluster
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/postgres-cluster-0.4.0/postgres-cluster-0.4.0.tgz
+    version: 0.4.0
+  - apiVersion: v2
     created: "2025-10-15T20:17:12.217409594Z"
     dependencies:
     - alias: operator
@@ -240,4 +254,4 @@ entries:
     urls:
     - https://github.com/appifyhub/charts/releases/download/vault-secrets-0.3.1/vault-secrets-0.3.1.tgz
     version: 0.3.1
-generated: "2025-10-30T22:27:27.218584966Z"
+generated: "2026-02-18T12:14:14.375397884Z"
