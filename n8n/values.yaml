@@ -3,7 +3,7 @@ app:
   name: n8n
   image:
     repository: docker.n8n.io/n8nio/n8n
-    tag: latest
+    tag: "2.9.4"
     pullPolicy: IfNotPresent
   replicas: 1
   revisionHistoryLimit: 1
