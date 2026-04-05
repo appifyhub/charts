@@ -54,6 +54,6 @@ Here's a summary of which additional tools this repository offers:
 #### App and Service Charts
 
   - [AppifyHub's Monolith API](./appifyhub-api/README.md): The API service from the [AppifyHub Monolith repository](https://github.com/appifyhub/monolith)
-  - [The Agent's API](./the-agent-api/README.md): The service from [The Agent repository](https://github.com/appifyhub/the-agent)
+  - [The Agent's API](./the-agent-api/README.md): The service from the ["Agent Backend" repository](https://github.com/appifyhub/agent-backend)
   - [Workflow Automations](./n8n/README.md): The n8n workflow automation platform for connecting apps and automating workflows
   - [URL Shortener](./url-shortener/README.md): A generic URL shortener powered by Shlink

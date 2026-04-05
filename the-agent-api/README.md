@@ -1,6 +1,6 @@
 # The Agent's API
 
-This directory contains the Kubernetes (K8s) configuration and Helm chart manifests for deploying The Agent's API service. The service's source code is available in ["The Agent" repository](https://github.com/appifyhub/the-agent).
+This directory contains the Kubernetes (K8s) configuration and Helm chart manifests for deploying The Agent's API service. The service's source code is available in ["Agent Backend" repository](https://github.com/appifyhub/agent-backend).
 
 ### How to use this?
 
@@ -19,7 +19,7 @@ Prerequisites:
 
 The Agent's API service is best deployed using a Helm chart, which is located next to this guide. The chart is designed to be installed into a K8s cluster, and it will create _almost all_ of the necessary resources for the API service to run.
 
-As mentioned in the prequisites, you need to have a database set up and running, and you need to have your secrets ready for the pods to use. The chart will not create the database for you or manage your K8s secrets. You need to at least have a K8s secret with the database connection string and other necessary secrets before installing the chart. For the list of all needed secrets, check the [service repository's](https://github.com/appifyhub/the-agent) Docker directory. This guide comes with sensible defaults, but those should be changed to match your environment.
+As mentioned in the prequisites, you need to have a database set up and running, and you need to have your secrets ready for the pods to use. The chart will not create the database for you or manage your K8s secrets. You need to at least have a K8s secret with the database connection string and other necessary secrets before installing the chart. For the list of all needed secrets, check the [service repository's](https://github.com/appifyhub/agent-backend) Docker directory. This guide comes with sensible defaults, but those should be changed to match your environment.
 
 Going forward, we will assume that you have the database set up and running, but you want to manage secrets using [Doppler](https://www.doppler.com). If you don't want to use Doppler, you can create the secrets manually using the `kubectl create secret` command and disable Doppler via Helm value directives. More details on how Doppler manages secrets can be found in the [Secrets Check](../secrets-check/README.md) guide.
 
