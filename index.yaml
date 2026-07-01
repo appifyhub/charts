@@ -147,6 +147,21 @@ entries:
     urls:
     - https://github.com/appifyhub/charts/releases/download/postgres-cluster-0.3.1/postgres-cluster-0.3.1.tgz
     version: 0.3.1
+  seaweedfs:
+  - apiVersion: v2
+    appVersion: "4.37"
+    created: "2026-07-01T21:38:32.123293459Z"
+    dependencies:
+    - name: seaweedfs
+      repository: https://seaweedfs.github.io/seaweedfs/helm
+      version: ^4.x.x
+    description: Cluster-local S3-compatible object storage
+    digest: 124e55e9b32f6ba859708f5d14603adc3d3fc336b98abad08f00e09abdad389f
+    name: seaweedfs
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/seaweedfs-0.1.0/seaweedfs-0.1.0.tgz
+    version: 0.1.0
   secrets-check:
   - apiVersion: v2
     created: "2025-10-15T20:17:12.412199824Z"
@@ -273,4 +288,4 @@ entries:
     urls:
     - https://github.com/appifyhub/charts/releases/download/vault-secrets-0.3.1/vault-secrets-0.3.1.tgz
     version: 0.3.1
-generated: "2026-04-05T14:42:45.901767271Z"
+generated: "2026-07-01T21:38:32.123337204Z"
