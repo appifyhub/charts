@@ -1,0 +1,13 @@
+SeaweedFS S3 storage is now running in your cluster.
+
+Endpoint (cluster-internal):
+  http://{{ .Release.Name }}-seaweedfs-s3:{{ .Values.seaweedfs.s3.port }}
+
+From other pods in the cluster, use:
+  AWS_ENDPOINT_URL=http://{{ .Release.Name }}-seaweedfs-s3.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.seaweedfs.s3.port }}
+
+{{- if .Values.s3Credentials.admin.accessKey }}
+
+Admin credentials were configured at install time.
+Store the access key and secret key in your consuming app's secrets manager.
+{{- end }}

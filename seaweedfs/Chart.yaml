@@ -1,0 +1,10 @@
+apiVersion: v2
+name: seaweedfs
+description: Cluster-local S3-compatible object storage
+version: 0.1.0
+appVersion: "4.37"
+type: application
+dependencies:
+  - name: seaweedfs
+    version: ^4.x.x
+    repository: https://seaweedfs.github.io/seaweedfs/helm

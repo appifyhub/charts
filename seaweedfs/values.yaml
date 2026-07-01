@@ -1,0 +1,104 @@
+# S3 credentials (set at install time via --set)
+s3Credentials:
+  admin:
+    accessKey: ""
+    secretKey: ""
+  readOnly:
+    accessKey: ""
+    secretKey: ""
+
+# SeaweedFS subchart configuration
+seaweedfs:
+  global:
+    seaweedfs:
+      serviceAccountName: seaweedfs
+      enableSecurity: false # mTLS between components; not needed for our cluster-internal use
+      securityConfig:
+        jwtSigning:
+          volumeWrite: true
+          volumeRead: false
+          filerWrite: false
+          filerRead: false
+
+  master:
+    enabled: true
+    replicas: 1
+    port: 9333
+    grpcPort: 19333
+    volumeSizeLimitMB: 1000
+    defaultReplication: "000"
+    data:
+      type: "persistentVolumeClaim"
+      size: "10Gi"
+      storageClass: "hcloud-volumes"
+    logs:
+      type: "emptyDir"
+    resources:
+      requests:
+        cpu: 16m
+        memory: 48Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
+
+  volume:
+    enabled: true
+    replicas: 1
+    port: 8080
+    grpcPort: 18080
+    minFreeSpacePercent: 5
+    dataDirs:
+      - name: data1
+        type: "persistentVolumeClaim"
+        size: "10Gi"
+        storageClass: "hcloud-volumes"
+        maxVolumes: 0
+    logs:
+      type: "emptyDir"
+    resources:
+      requests:
+        cpu: 16m
+        memory: 48Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+  filer:
+    enabled: true
+    replicas: 1
+    port: 8888
+    grpcPort: 18888
+    encryptVolumeData: false
+    # LevelDB is the default and supports single-filer setups
+    data:
+      type: "persistentVolumeClaim"
+      size: "10Gi"
+      storageClass: "hcloud-volumes"
+    logs:
+      type: "emptyDir"
+    resources:
+      requests:
+        cpu: 16m
+        memory: 56Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+  s3:
+    enabled: true
+    replicas: 1
+    port: 8333
+    enableAuth: true
+    existingConfigSecret: "seaweedfs-s3-config"
+    logs:
+      type: "emptyDir"
+    resources:
+      requests:
+        cpu: 16m
+        memory: 48Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
+
+  cosi:
+    enabled: false
