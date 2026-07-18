@@ -27,6 +27,8 @@ seaweedfs:
     grpcPort: 19333
     volumeSizeLimitMB: 1000
     defaultReplication: "000"
+    extraEnvironmentVars:
+      WEED_MASTER_VOLUME_GROWTH_COPY_1: "1"
     data:
       type: "persistentVolumeClaim"
       size: "10Gi"
