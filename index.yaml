@@ -149,6 +149,20 @@ entries:
     version: 0.3.1
   seaweedfs:
   - apiVersion: v2
+    appVersion: 4.39.0
+    created: "2026-07-18T09:39:57.617746872Z"
+    dependencies:
+    - name: seaweedfs
+      repository: https://seaweedfs.github.io/seaweedfs/helm
+      version: 4.39.0
+    description: Cluster-local S3-compatible object storage
+    digest: dd2966ee3edfd5e28ab34326a7a94a10f4e61fde318deac9174c582ef8125d2f
+    name: seaweedfs
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/seaweedfs-0.1.2/seaweedfs-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
     appVersion: "4.37"
     created: "2026-07-18T09:15:15.428338075Z"
     dependencies:
@@ -302,4 +316,4 @@ entries:
     urls:
     - https://github.com/appifyhub/charts/releases/download/vault-secrets-0.3.1/vault-secrets-0.3.1.tgz
     version: 0.3.1
-generated: "2026-07-18T09:15:15.428385664Z"
+generated: "2026-07-18T09:39:57.617808179Z"
