@@ -9,10 +9,10 @@ app:
   revisionHistoryLimit: 1
   resources:
     requests:
-      cpu: 50m
+      cpu: 250m
       memory: 1Gi
     limits:
-      cpu: 750m
+      cpu: 1500m
       memory: 2Gi
   servicePort: 80
   containerPort: 80
@@ -28,6 +28,7 @@ autoscaling:
   enabled: false
   minReplicas: 1
   maxReplicas: 3
+  scaleDownStabilizationWindowSeconds: 300
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
 
