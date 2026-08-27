@@ -65,6 +65,7 @@ config:
     # By default, these are computed in the ConfigMap:
     # - DEFAULT_DOMAIN: <ingress.domain.prefix>.<ingress.domain.base>
     # - IS_HTTPS_ENABLED: true if ingress.tls.enabled, else false
+    DEFAULT_SHORT_CODES_LENGTH: "6"
 
     # DEFAULT_DOMAIN: "url-shortener.cloud.appifyhub.local"
     # IS_HTTPS_ENABLED: "false"
