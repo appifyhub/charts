@@ -48,6 +48,15 @@ ingress:
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
     traefik.ingress.kubernetes.io/router.tls: "false"
+  rateLimit:
+    enabled: false
+    average: 20
+    period: 1m
+    burst: 5
+    ipv6Subnet: 64
+  apiAllowList:
+    enabled: false
+    sourceRange: []
 
 # Secret management
 secrets:
