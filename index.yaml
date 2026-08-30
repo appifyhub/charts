@@ -12,6 +12,19 @@ entries:
     version: 0.3.1
   cluster-ingress:
   - apiVersion: v2
+    created: "2026-08-30T12:49:43.701414376Z"
+    dependencies:
+    - name: traefik
+      repository: https://traefik.github.io/charts
+      version: 41.4.0
+    description: The essential Load Balancer setup using Traefik
+    digest: f5054e25619bbcdab84a2882821c054cabbba74e1cfbfdb2ce52469dbede1be4
+    name: cluster-ingress
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/cluster-ingress-0.4.0/cluster-ingress-0.4.0.tgz
+    version: 0.4.0
+  - apiVersion: v2
     created: "2025-10-15T20:17:11.657125208Z"
     dependencies:
     - name: traefik
@@ -352,4 +365,4 @@ entries:
     urls:
     - https://github.com/appifyhub/charts/releases/download/vault-secrets-0.3.1/vault-secrets-0.3.1.tgz
     version: 0.3.1
-generated: "2026-08-29T21:03:25.480996892Z"
+generated: "2026-08-30T12:49:43.701472675Z"
