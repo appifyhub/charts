@@ -82,13 +82,11 @@ helm uninstall cluster-ingress --namespace traefik
 kubectl delete namespace traefik
 ```
 
-If you wish to install the additional CRDs (Custom Resource Definitions) for Traefik, e.g. to be able to include Middleware components, you can do so by running the following command:
+Install or update Traefik CRDs before installing or upgrading the chart:
 
 ```bash
-# Install the additional CRDs – mind the Traefik version
-kubectl apply \
-  -f https://raw.githubusercontent.com/traefik/traefik/v3.3.5/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml \
-  --namespace traefik
+helm show crds traefik/traefik --version 41.4.0 \
+  | kubectl apply --server-side --force-conflicts -f -
 ```
 
 ### External Load Balancer

@@ -24,13 +24,14 @@ traefik:
   # Important to note:
   # Trusted IPs config here allows no IPs to forward headers. You could replace
   # this configuration with the IP ranges that you trust (or load balancer IP).
+  core:
+    strictTLSOptions: true
   ports:
     web:
       port: 80
       expose: {}
       exposedPort: 80
       protocol: TCP
-      entryPointName: web
       forwardedHeaders:
         enabled: false
         trustedIPs: []
@@ -42,7 +43,6 @@ traefik:
       expose: {}
       exposedPort: 443
       protocol: TCP
-      entryPointName: websecure
       forwardedHeaders:
         enabled: false
         trustedIPs: []
