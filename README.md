@@ -43,6 +43,7 @@ Here's a summary of which additional tools this repository offers:
   - [Ingress Controller and Load Balancer](./cluster-ingress/README.md): A straightforward way to expose services to the Internet using Traefik
   - [PostgreSQL Cluster](./postgres-cluster/README.md): A database cluster with a CloudNativePG operator
   - [Continuous Deployment](./continuous-deployment/README.md): A GitOps-based continuous deployment setup using ArgoCD
+  - [Observability](./observability/README.md): Lightweight logs, metrics and traces with OpenObserve and OpenTelemetry
   - [Vault - Secrets Manager](./vault-secrets/README.md): _(not recommended)_ An advanced secrets manager for storing sensitive configuration data
 
 #### Tests and Demos

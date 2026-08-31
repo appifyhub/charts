@@ -1,0 +1,505 @@
+# Cluster identity attached to every metric, log and trace
+# This value is also duplicated as k8s.cluster for compatibility with the official dashboards.
+global:
+  clusterName: kubernetes
+
+# Secrets must exist before OpenObserve and the collectors start.
+# Doppler creates the managed secret; provider "none" expects it to be created manually.
+secrets:
+  provider: doppler
+  managedSecretName: observability-secrets
+  doppler:
+    project: observability
+    config: production
+    token: ""
+    resyncSeconds: 300
+
+# Only the OpenObserve UI is exposed. OTLP remains cluster-internal.
+ingress:
+  enabled: true
+  className: traefik
+  domain:
+    prefix: observability
+    base: example.com
+  annotations: {}
+  tls:
+    enabled: false
+    secretName: observability-tls
+
+# Import selected official OpenObserve Kubernetes dashboards after installation.
+dashboards:
+  enabled: true
+  organization: default
+  image:
+    repository: curlimages/curl
+    tag: "8.16.0"
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 10m
+      memory: 16Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi
+
+# Official OpenObserve standalone chart
+openobserve:
+  fullnameOverride: openobserve
+
+  image:
+    pullPolicy: IfNotPresent
+
+  auth:
+    existingRootUserSecret:
+      name: observability-secrets
+      emailKey: ZO_ROOT_USER_EMAIL
+      passwordKey: ZO_ROOT_USER_PASSWORD
+
+  # Telemetry files are persisted to SeaweedFS. /data only holds transient WAL/cache data.
+  persistence:
+    enabled: false
+
+  cache:
+    enabled: false
+
+  config:
+    ZO_APP_NAME: openobserve
+    ZO_LOCAL_MODE: "false"
+    ZO_LOCAL_MODE_STORAGE: s3
+    ZO_DATA_DIR: /data
+    ZO_META_STORE: postgres
+    ZO_META_CONNECTION_POOL_MIN_SIZE: "1"
+    ZO_META_CONNECTION_POOL_MAX_SIZE: "5"
+
+    # SeaweedFS S3-compatible object storage
+    ZO_S3_PROVIDER: s3
+    ZO_S3_SERVER_URL: http://seaweedfs-s3.storage.svc.cluster.local:8333
+    ZO_S3_REGION_NAME: us-east-1
+    ZO_S3_BUCKET_NAME: openobserve
+    ZO_S3_BUCKET_PREFIX: telemetry
+    ZO_S3_FEATURE_FORCE_HOSTED_STYLE: "false"
+    ZO_S3_FEATURE_HTTP1_ONLY: "true"
+    ZO_S3_CONNECT_TIMEOUT: "10"
+    ZO_S3_REQUEST_TIMEOUT: "60"
+    ZO_S3_MAX_RETRIES: "3"
+
+    # Keep transient data small and flush it quickly to object storage.
+    ZO_MAX_FILE_SIZE_ON_DISK: "64"
+    ZO_MAX_FILE_SIZE_IN_MEMORY: "64"
+    ZO_MAX_FILE_RETENTION_TIME: "60"
+    ZO_FILE_PUSH_INTERVAL: "5"
+    ZO_MEM_PERSIST_INTERVAL: "5"
+    ZO_WAL_FSYNC_DISABLED: "false"
+
+    # Bound work on this small cluster.
+    ZO_QUERY_THREAD_NUM: "2"
+    ZO_FILE_MOVE_THREAD_NUM: "1"
+    ZO_FILE_MERGE_THREAD_NUM: "1"
+    ZO_COMPACT_BATCH_SIZE: "1"
+    ZO_MEMORY_CACHE_ENABLED: "false"
+    ZO_DISK_CACHE_ENABLED: "false"
+    ZO_RESULT_CACHE_ENABLED: "false"
+    ZO_MEMORY_CIRCUIT_BREAKER_ENABLED: "true"
+    ZO_MEMORY_CIRCUIT_BREAKER_RATIO: "80"
+
+    # Retain telemetry for 30 days and disable outbound product telemetry.
+    ZO_COMPACT_DATA_RETENTION_DAYS: "30"
+    ZO_TELEMETRY: "false"
+    ZO_USAGE_REPORTING_ENABLED: "false"
+    ZO_RUM_ENABLED: "false"
+    ZO_PROF_PYROSCOPE_ENABLED: "false"
+
+  extraEnv:
+    - name: ZO_META_POSTGRES_DSN
+      valueFrom:
+        secretKeyRef:
+          name: observability-secrets
+          key: ZO_META_POSTGRES_DSN
+    - name: ZO_S3_ACCESS_KEY
+      valueFrom:
+        secretKeyRef:
+          name: observability-secrets
+          key: ZO_S3_ACCESS_KEY
+    - name: ZO_S3_SECRET_KEY
+      valueFrom:
+        secretKeyRef:
+          name: observability-secrets
+          key: ZO_S3_SECRET_KEY
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+      ephemeral-storage: 2Gi
+
+  ingress:
+    enabled: false
+  gateway:
+    enabled: false
+  serviceMonitor:
+    enabled: false
+  minio:
+    enabled: false
+  enterprise:
+    enabled: false
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+# Per-node collector: container logs plus host, pod and container metrics
+# The preset supplies host mounts and the least RBAC needed by these receivers.
+otel-agent:
+  fullnameOverride: otel-agent
+  mode: daemonset
+
+  image:
+    repository: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-k8s
+  command:
+    name: otelcol-k8s
+
+  presets:
+    logsCollection:
+      enabled: true
+      includeCollectorLogs: false
+      storeCheckpoints: true
+      maxRecombineLogSize: 102400
+    hostMetrics:
+      enabled: true
+    kubernetesAttributes:
+      enabled: true
+      extractAllPodLabels: false
+      extractAllPodAnnotations: false
+    kubeletMetrics:
+      enabled: true
+    resourceDetection:
+      enabled: true
+
+  extraEnvs:
+    - name: ZO_ROOT_USER_EMAIL
+      valueFrom:
+        secretKeyRef:
+          name: observability-secrets
+          key: ZO_ROOT_USER_EMAIL
+    - name: ZO_ROOT_USER_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: observability-secrets
+          key: ZO_ROOT_USER_PASSWORD
+
+  alternateConfig:
+    extensions:
+      health_check:
+        endpoint: ${env:MY_POD_IP}:13133
+      file_storage:
+        directory: /var/lib/otelcol
+        create_directory: true
+      basicauth/openobserve:
+        client_auth:
+          username: ${env:ZO_ROOT_USER_EMAIL}
+          password: ${env:ZO_ROOT_USER_PASSWORD}
+    receivers:
+      filelog:
+        operators:
+          - id: container-parser
+            type: container
+          - id: application-json
+            type: json_parser
+            if: 'body matches "^\\{"'
+            parse_from: body
+            parse_to: attributes
+    processors:
+      memory_limiter:
+        check_interval: 5s
+        limit_percentage: 75
+        spike_limit_percentage: 15
+      resource/cluster:
+        attributes:
+          - action: upsert
+            key: k8s.cluster.name
+            value: '{{ .Values.global.clusterName }}'
+          - action: upsert
+            key: k8s.cluster
+            value: '{{ .Values.global.clusterName }}'
+      batch:
+        timeout: 5s
+        send_batch_size: 1024
+    exporters:
+      otlphttp/openobserve_logs:
+        endpoint: http://openobserve:5080/api/default
+        auth:
+          authenticator: basicauth/openobserve
+        headers:
+          stream-name: k8s_logs
+        compression: gzip
+        timeout: 10s
+        retry_on_failure:
+          enabled: true
+          max_elapsed_time: 60s
+        sending_queue:
+          enabled: true
+          queue_size: 1000
+      otlphttp/openobserve_metrics:
+        endpoint: http://openobserve:5080/api/default
+        auth:
+          authenticator: basicauth/openobserve
+        compression: gzip
+        timeout: 10s
+        retry_on_failure:
+          enabled: true
+          max_elapsed_time: 60s
+        sending_queue:
+          enabled: true
+          queue_size: 1000
+    service:
+      extensions:
+        - health_check
+        - basicauth/openobserve
+      telemetry:
+        logs:
+          level: warn
+      pipelines:
+        logs:
+          receivers: []
+          processors:
+            - memory_limiter
+            - resource/cluster
+            - batch
+          exporters:
+            - otlphttp/openobserve_logs
+        metrics:
+          receivers: []
+          processors:
+            - memory_limiter
+            - resource/cluster
+            - batch
+          exporters:
+            - otlphttp/openobserve_metrics
+
+  ports:
+    otlp:
+      enabled: false
+    otlp-http:
+      enabled: false
+    jaeger-compact:
+      enabled: false
+    jaeger-thrift:
+      enabled: false
+    jaeger-grpc:
+      enabled: false
+    zipkin:
+      enabled: false
+    metrics:
+      enabled: false
+
+  service:
+    enabled: false
+  serviceMonitor:
+    enabled: false
+  podMonitor:
+    enabled: false
+  revisionHistoryLimit: 1
+  useGOMEMLIMIT: true
+  resources:
+    requests:
+      cpu: 30m
+      memory: 96Mi
+      ephemeral-storage: 64Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
+  tolerations:
+    - operator: Exists
+  nodeSelector: {}
+  affinity: {}
+  rollout:
+    rollingUpdate:
+      maxUnavailable: 1
+    strategy: RollingUpdate
+
+# Singleton collector: cluster metrics/events and OTLP from instrumented applications
+otel-cluster:
+  fullnameOverride: otel-cluster
+  mode: deployment
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-k8s
+  command:
+    name: otelcol-k8s
+
+  presets:
+    kubernetesAttributes:
+      enabled: true
+      extractAllPodLabels: false
+      extractAllPodAnnotations: false
+    kubernetesEvents:
+      enabled: true
+      useK8sEventsReceiver: true
+    clusterMetrics:
+      enabled: true
+    resourceDetection:
+      enabled: true
+
+  extraEnvs:
+    - name: ZO_ROOT_USER_EMAIL
+      valueFrom:
+        secretKeyRef:
+          name: observability-secrets
+          key: ZO_ROOT_USER_EMAIL
+    - name: ZO_ROOT_USER_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: observability-secrets
+          key: ZO_ROOT_USER_PASSWORD
+
+  alternateConfig:
+    extensions:
+      health_check:
+        endpoint: ${env:MY_POD_IP}:13133
+      basicauth/openobserve:
+        client_auth:
+          username: ${env:ZO_ROOT_USER_EMAIL}
+          password: ${env:ZO_ROOT_USER_PASSWORD}
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: ${env:MY_POD_IP}:4317
+          http:
+            endpoint: ${env:MY_POD_IP}:4318
+    processors:
+      memory_limiter:
+        check_interval: 5s
+        limit_percentage: 75
+        spike_limit_percentage: 15
+      resource/cluster:
+        attributes:
+          - action: upsert
+            key: k8s.cluster.name
+            value: '{{ .Values.global.clusterName }}'
+          - action: upsert
+            key: k8s.cluster
+            value: '{{ .Values.global.clusterName }}'
+      batch:
+        timeout: 5s
+        send_batch_size: 1024
+    exporters:
+      otlphttp/openobserve_events:
+        endpoint: http://openobserve:5080/api/default
+        auth:
+          authenticator: basicauth/openobserve
+        headers:
+          stream-name: k8s_events
+        compression: gzip
+        timeout: 10s
+        retry_on_failure:
+          enabled: true
+          max_elapsed_time: 60s
+        sending_queue:
+          enabled: true
+          queue_size: 1000
+      otlphttp/openobserve_metrics:
+        endpoint: http://openobserve:5080/api/default
+        auth:
+          authenticator: basicauth/openobserve
+        compression: gzip
+        timeout: 10s
+        retry_on_failure:
+          enabled: true
+          max_elapsed_time: 60s
+        sending_queue:
+          enabled: true
+          queue_size: 1000
+      otlphttp/openobserve_traces:
+        endpoint: http://openobserve:5080/api/default
+        auth:
+          authenticator: basicauth/openobserve
+        compression: gzip
+        timeout: 10s
+        retry_on_failure:
+          enabled: true
+          max_elapsed_time: 60s
+        sending_queue:
+          enabled: true
+          queue_size: 1000
+    service:
+      extensions:
+        - health_check
+        - basicauth/openobserve
+      telemetry:
+        logs:
+          level: warn
+      pipelines:
+        logs:
+          receivers: []
+          processors:
+            - memory_limiter
+            - resource/cluster
+            - batch
+          exporters:
+            - otlphttp/openobserve_events
+        metrics:
+          receivers:
+            - otlp
+          processors:
+            - memory_limiter
+            - resource/cluster
+            - batch
+          exporters:
+            - otlphttp/openobserve_metrics
+        traces:
+          receivers:
+            - otlp
+          processors:
+            - memory_limiter
+            - resource/cluster
+            - batch
+          exporters:
+            - otlphttp/openobserve_traces
+
+  ports:
+    otlp:
+      enabled: true
+      hostPort: 0
+    otlp-http:
+      enabled: true
+      hostPort: 0
+    jaeger-compact:
+      enabled: false
+    jaeger-thrift:
+      enabled: false
+    jaeger-grpc:
+      enabled: false
+    zipkin:
+      enabled: false
+    metrics:
+      enabled: false
+
+  service:
+    enabled: true
+    type: ClusterIP
+  ingress:
+    enabled: false
+  serviceMonitor:
+    enabled: false
+  podMonitor:
+    enabled: false
+  revisionHistoryLimit: 1
+  useGOMEMLIMIT: true
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+      ephemeral-storage: 64Mi
+    limits:
+      cpu: 500m
+      memory: 384Mi
+      ephemeral-storage: 256Mi
+  tolerations: []
+  nodeSelector: {}
+  affinity: {}

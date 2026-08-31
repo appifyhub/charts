@@ -1,0 +1,15 @@
+{{- if .Values.dashboards.enabled }}
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: {{ .Release.Name }}-dashboards
+
+data:
+  namespaces.json: |-
+{{ .Files.Get "dashboards/namespaces.json" | indent 4 }}
+  namespace-pods.json: |-
+{{ .Files.Get "dashboards/namespace-pods.json" | indent 4 }}
+  nodes.json: |-
+{{ .Files.Get "dashboards/nodes.json" | indent 4 }}
+{{- end }}

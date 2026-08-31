@@ -1,0 +1,105 @@
+{{- if .Values.dashboards.enabled }}
+apiVersion: batch/v1
+kind: Job
+
+metadata:
+  name: {{ .Release.Name }}-dashboards
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+    helm.sh/hook-weight: "10"
+
+spec:
+  backoffLimit: 3
+  activeDeadlineSeconds: 600
+  ttlSecondsAfterFinished: 300
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Chart.Name }}-dashboards
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      automountServiceAccountToken: false
+      restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: importer
+          image: {{ .Values.dashboards.image.repository }}:{{ .Values.dashboards.image.tag }}
+          imagePullPolicy: {{ .Values.dashboards.image.pullPolicy }}
+          command:
+            - /bin/sh
+            - -ec
+          args:
+            - |
+              until curl --silent --fail --max-time 3 http://openobserve:5080/healthz >/dev/null; do
+                sleep 5
+              done
+
+              for dashboard in /dashboards/*.json; do
+                dashboard_id="$(sed -n 's/^[[:space:]]*"dashboardId": "\([^"]*\)".*/\1/p' "${dashboard}" | head -n 1)"
+                if [ -z "${dashboard_id}" ]; then
+                  echo "Missing dashboardId in ${dashboard}" >&2
+                  exit 1
+                fi
+
+                if curl --silent --fail \
+                  --user "${ZO_ROOT_USER_EMAIL}:${ZO_ROOT_USER_PASSWORD}" \
+                  "http://openobserve:5080/api/{{ .Values.dashboards.organization }}/dashboards/${dashboard_id}" \
+                  >/dev/null; then
+                  echo "Dashboard ${dashboard_id} already exists"
+                  continue
+                fi
+
+                status="$(curl --silent --show-error \
+                  --output /tmp/response \
+                  --write-out '%{http_code}' \
+                  --user "${ZO_ROOT_USER_EMAIL}:${ZO_ROOT_USER_PASSWORD}" \
+                  --header 'Content-Type: application/json' \
+                  --request POST \
+                  --data-binary "@${dashboard}" \
+                  "http://openobserve:5080/api/{{ .Values.dashboards.organization }}/dashboards")"
+                case "${status}" in
+                  200|201|409)
+                    echo "Imported dashboard ${dashboard_id}"
+                    ;;
+                  *)
+                    cat /tmp/response >&2
+                    exit 1
+                    ;;
+                esac
+              done
+          env:
+            - name: ZO_ROOT_USER_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.managedSecretName }}
+                  key: ZO_ROOT_USER_EMAIL
+            - name: ZO_ROOT_USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.managedSecretName }}
+                  key: ZO_ROOT_USER_PASSWORD
+          resources:
+{{ toYaml .Values.dashboards.resources | indent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: dashboards
+              mountPath: /dashboards
+              readOnly: true
+            - name: temporary
+              mountPath: /tmp
+      volumes:
+        - name: dashboards
+          configMap:
+            name: {{ .Release.Name }}-dashboards
+        - name: temporary
+          emptyDir: {}
+{{- end }}

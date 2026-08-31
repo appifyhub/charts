@@ -1,0 +1,19 @@
+apiVersion: v2
+name: observability
+description: Lightweight in-cluster observability with OpenObserve and OpenTelemetry
+version: 0.1.0
+appVersion: "0.92.2"
+type: application
+dependencies:
+  - name: openobserve-standalone
+    alias: openobserve
+    version: 0.92.2
+    repository: https://charts.openobserve.ai
+  - name: opentelemetry-collector
+    alias: otel-agent
+    version: 0.172.0
+    repository: https://open-telemetry.github.io/opentelemetry-helm-charts
+  - name: opentelemetry-collector
+    alias: otel-cluster
+    version: 0.172.0
+    repository: https://open-telemetry.github.io/opentelemetry-helm-charts

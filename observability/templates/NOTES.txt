@@ -1,0 +1,23 @@
+Thank you for installing {{ .Chart.Name }}!
+
+OpenObserve UI:
+{{- if .Values.ingress.enabled }}
+  {{- if .Values.ingress.tls.enabled }}
+  https://{{ .Values.ingress.domain.prefix }}.{{ .Values.ingress.domain.base }}
+  {{- else }}
+  http://{{ .Values.ingress.domain.prefix }}.{{ .Values.ingress.domain.base }}
+  {{- end }}
+{{- else }}
+  kubectl port-forward service/openobserve 5080:5080 --namespace {{ .Release.Namespace }}
+  Then open: http://localhost:5080
+{{- end }}
+
+Application OTLP endpoints:
+  gRPC: otel-cluster.{{ .Release.Namespace }}.svc.cluster.local:4317
+  HTTP: http://otel-cluster.{{ .Release.Namespace }}.svc.cluster.local:4318
+
+Persistent stores:
+  Metadata: external PostgreSQL from ZO_META_POSTGRES_DSN
+  Telemetry: s3://{{ .Values.openobserve.config.ZO_S3_BUCKET_NAME }}/{{ .Values.openobserve.config.ZO_S3_BUCKET_PREFIX }}
+
+The chart does not create the PostgreSQL database/role or S3 bucket. Both must exist before installation.
