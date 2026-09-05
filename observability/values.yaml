@@ -12,7 +12,6 @@ secrets:
     project: observability
     config: production
     token: ""
-    resyncSeconds: 300
 
 # Only the OpenObserve UI is exposed. OTLP remains cluster-internal.
 ingress:
@@ -21,10 +20,11 @@ ingress:
   domain:
     prefix: observability
     base: example.com
-  annotations: {}
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.tls: "false"
   tls:
     enabled: false
-    secretName: observability-tls
 
 # Import selected official OpenObserve Kubernetes dashboards after installation.
 dashboards:

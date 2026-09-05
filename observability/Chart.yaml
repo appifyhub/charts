@@ -1,7 +1,7 @@
 apiVersion: v2
 name: observability
 description: Lightweight in-cluster observability with OpenObserve and OpenTelemetry
-version: 0.1.0
+version: 0.1.1
 appVersion: "0.92.2"
 type: application
 dependencies:

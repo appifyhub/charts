@@ -123,7 +123,7 @@ Important wrapper values:
 | `openobserve.config.ZO_S3_*` | SeaweedFS/S3 defaults | Object-store connection and bucket |
 | `dashboards.enabled` | `true` | Import the pinned Kubernetes dashboards |
 
-The default resource requests across a four-node cluster are approximately 640 MiB memory and 270m CPU:
+The default resource requests are approximately 384 MiB memory and 150m CPU, plus 96 MiB memory and 30m CPU for each cluster node:
 
 - OpenObserve: 100m CPU / 256Mi memory requested, 1000m / 1Gi limited
 - each node Collector: 30m CPU / 96Mi memory requested, 250m / 256Mi limited
@@ -193,7 +193,7 @@ env:
   - name: OTEL_SDK_DISABLED
     value: "false"
   - name: OTEL_SERVICE_NAME
-    value: the-agent
+    value: "<service-name>"
   - name: OTEL_EXPORTER_OTLP_ENDPOINT
     value: http://otel-cluster.observability.svc.cluster.local:4317
   - name: OTEL_EXPORTER_OTLP_PROTOCOL
@@ -203,7 +203,7 @@ env:
   - name: OTEL_TRACES_SAMPLER
     value: parentbased_always_on
   - name: OTEL_RESOURCE_ATTRIBUTES
-    value: deployment.environment.name=production
+    value: "deployment.environment.name=<environment>"
 ```
 
 Logs continue through stdout and the node Collector; disabling the application's OTLP log exporter prevents duplication.
@@ -219,10 +219,10 @@ kubectl --namespace observability get jobs
 kubectl --namespace observability top pods
 ```
 
-Expected workloads on a four-node cluster:
+Expected workloads:
 
 - `openobserve` StatefulSet: 1 pod
-- `otel-agent` DaemonSet: 4 pods
+- `otel-agent` DaemonSet: 1 pod per schedulable node
 - `otel-cluster` Deployment: 1 pod
 
 Open the configured UI, select the `default` organization and verify:
