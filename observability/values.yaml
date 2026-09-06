@@ -131,8 +131,9 @@ openobserve:
     ZO_MEMORY_CIRCUIT_BREAKER_ENABLED: "true"
     ZO_MEMORY_CIRCUIT_BREAKER_RATIO: "80"
 
-    # Retain telemetry for 30 days and disable outbound product telemetry.
-    ZO_COMPACT_DATA_RETENTION_DAYS: "30"
+    # Retain telemetry for 14 days and disable outbound product telemetry.
+    ZO_COMPACT_DATA_RETENTION_DAYS: "14"
+    ZO_IGNORE_FILE_RETENTION_BY_STREAM: "true"
     ZO_TELEMETRY: "false"
     ZO_USAGE_REPORTING_ENABLED: "false"
     ZO_RUM_ENABLED: "false"
@@ -187,7 +188,7 @@ openobserve:
   tolerations: []
   affinity: {}
 
-# Per-node collector: container logs plus host, pod and container metrics
+# Per-node collector: container logs plus pod and container metrics.
 # The preset supplies host mounts and the least RBAC needed by these receivers.
 otel-agent:
   fullnameOverride: otel-agent
@@ -205,7 +206,7 @@ otel-agent:
       storeCheckpoints: true
       maxRecombineLogSize: 102400
     hostMetrics:
-      enabled: true
+      enabled: false
     kubernetesAttributes:
       enabled: true
       extractAllPodLabels: false
@@ -240,6 +241,8 @@ otel-agent:
           password: ${env:ZO_ROOT_USER_PASSWORD}
     receivers:
       filelog:
+        exclude:
+          - '/var/log/pods/{{ .Release.Namespace }}_*/*/*.log'
         operators:
           - id: container-parser
             type: container
@@ -248,6 +251,8 @@ otel-agent:
             if: 'body matches "^\\{"'
             parse_from: body
             parse_to: attributes
+      kubeletstats:
+        collection_interval: 60s
     processors:
       memory_limiter:
         check_interval: 5s
@@ -403,6 +408,8 @@ otel-cluster:
           username: ${env:ZO_ROOT_USER_EMAIL}
           password: ${env:ZO_ROOT_USER_PASSWORD}
     receivers:
+      k8s_cluster:
+        collection_interval: 60s
       otlp:
         protocols:
           grpc:

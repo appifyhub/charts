@@ -84,7 +84,7 @@ AWS_SECRET_ACCESS_KEY='<secret-key>' \
 aws --endpoint-url http://127.0.0.1:8333 s3 mb s3://openobserve
 ```
 
-The default 30-day retention deletes expired telemetry through OpenObserve's compactor. Monitor SeaweedFS capacity and expand its existing volume before it fills.
+The default 14-day retention deletes expired telemetry through OpenObserve's compactor. Infrastructure metrics are sampled every 60 seconds, duplicate host metrics are disabled, and the chart excludes its own namespace logs to avoid self-ingestion. The global policy overrides per-stream retention so data cannot be retained beyond 14 days; expired files are marked and removed from SeaweedFS after OpenObserve's deletion delay. This is a soft storage budget rather than a strict byte quota; monitor SeaweedFS capacity and shorten retention if workload growth pushes storage beyond the target.
 
 ## Required secrets
 
@@ -123,7 +123,7 @@ Important wrapper values:
 | `secrets.managedSecretName` | `observability-secrets` | Secret materialized for selective component access |
 | `ingress.enabled` | `true` | Expose only the OpenObserve UI |
 | `ingress.domain.*` | `observability.example.com` | UI hostname |
-| `openobserve.config.ZO_COMPACT_DATA_RETENTION_DAYS` | `30` | Retention for logs, metrics and traces |
+| `openobserve.config.ZO_COMPACT_DATA_RETENTION_DAYS` | `14` | Retention for logs, metrics and traces |
 | `openobserve.config.ZO_S3_*` | SeaweedFS/S3 defaults | Object-store connection and bucket |
 | `dashboards.enabled` | `true` | Import the pinned Kubernetes dashboards |
 
