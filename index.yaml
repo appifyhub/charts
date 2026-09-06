@@ -124,6 +124,32 @@ entries:
   observability:
   - apiVersion: v2
     appVersion: 0.92.2
+    created: "2026-09-06T23:39:26.82643493Z"
+    dependencies:
+    - alias: openobserve
+      name: openobserve-standalone
+      repository: https://charts.openobserve.ai
+      version: 0.92.2
+    - alias: otel-agent
+      name: opentelemetry-collector
+      repository: https://open-telemetry.github.io/opentelemetry-helm-charts
+      version: 0.172.0
+    - alias: otel-cluster
+      name: opentelemetry-collector
+      repository: https://open-telemetry.github.io/opentelemetry-helm-charts
+      version: 0.172.0
+    - name: nats
+      repository: https://nats-io.github.io/k8s/helm/charts/
+      version: 2.14.6
+    description: Lightweight in-cluster observability with OpenObserve and OpenTelemetry
+    digest: de66c85a6b613797d4e471087511da408db35ecae6877ba6f73f830a0d0d9d6b
+    name: observability
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/observability-0.1.7/observability-0.1.7.tgz
+    version: 0.1.7
+  - apiVersion: v2
+    appVersion: 0.92.2
     created: "2026-09-06T21:56:15.261238392Z"
     dependencies:
     - alias: openobserve
@@ -551,4 +577,4 @@ entries:
     urls:
     - https://github.com/appifyhub/charts/releases/download/vault-secrets-0.3.1/vault-secrets-0.3.1.tgz
     version: 0.3.1
-generated: "2026-09-06T23:04:43.224833215Z"
+generated: "2026-09-06T23:39:26.826527909Z"
