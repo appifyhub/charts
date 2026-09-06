@@ -32,48 +32,80 @@ spec:
           image: {{ .Values.dashboards.image.repository }}:{{ .Values.dashboards.image.tag }}
           imagePullPolicy: {{ .Values.dashboards.image.pullPolicy }}
           command:
-            - /bin/sh
-            - -ec
+            - python
+            - -c
           args:
             - |
-              until curl --silent --fail --max-time 3 http://openobserve:5080/healthz >/dev/null; do
-                sleep 5
-              done
+              import base64
+              import json
+              import os
+              import time
+              from pathlib import Path
+              from urllib.error import HTTPError, URLError
+              from urllib.parse import quote
+              from urllib.request import Request, urlopen
 
-              for dashboard in /dashboards/*.json; do
-                dashboard_id="$(sed -n 's/^[[:space:]]*"dashboardId": "\([^"]*\)".*/\1/p' "${dashboard}" | head -n 1)"
-                if [ -z "${dashboard_id}" ]; then
-                  echo "Missing dashboardId in ${dashboard}" >&2
-                  exit 1
-                fi
+              base_url = "http://openobserve:5080"
+              organization = os.environ["ZO_ORGANIZATION"]
+              folder = os.environ["ZO_DASHBOARD_FOLDER"]
+              credentials = base64.b64encode(
+                  f"{os.environ['ZO_ROOT_USER_EMAIL']}:{os.environ['ZO_ROOT_USER_PASSWORD']}".encode(),
+              ).decode()
 
-                if curl --silent --fail \
-                  --user "${ZO_ROOT_USER_EMAIL}:${ZO_ROOT_USER_PASSWORD}" \
-                  "http://openobserve:5080/api/{{ .Values.dashboards.organization }}/dashboards/${dashboard_id}" \
-                  >/dev/null; then
-                  echo "Dashboard ${dashboard_id} already exists"
-                  continue
-                fi
+              def send(method, path, payload = None):
+                  headers = {
+                      "Authorization": f"Basic {credentials}",
+                  }
+                  data = None
+                  if payload is not None:
+                      headers["Content-Type"] = "application/json"
+                      data = json.dumps(payload).encode()
+                  request = Request(f"{base_url}{path}", data = data, headers = headers, method = method)
+                  try:
+                      with urlopen(request, timeout = 10) as response:
+                          body = response.read()
+                  except HTTPError as error:
+                      raise SystemExit(f"{method} {path} failed: {error.code} {error.read().decode()}") from error
+                  return json.loads(body) if body else None
 
-                status="$(curl --silent --show-error \
-                  --output /tmp/response \
-                  --write-out '%{http_code}' \
-                  --user "${ZO_ROOT_USER_EMAIL}:${ZO_ROOT_USER_PASSWORD}" \
-                  --header 'Content-Type: application/json' \
-                  --request POST \
-                  --data-binary "@${dashboard}" \
-                  "http://openobserve:5080/api/{{ .Values.dashboards.organization }}/dashboards")"
-                case "${status}" in
-                  200|201|409)
-                    echo "Imported dashboard ${dashboard_id}"
-                    ;;
-                  *)
-                    cat /tmp/response >&2
-                    exit 1
-                    ;;
-                esac
-              done
+              for _ in range(120):
+                  try:
+                      with urlopen(f"{base_url}/healthz", timeout = 3):
+                          break
+                  except (HTTPError, URLError, TimeoutError):
+                      time.sleep(5)
+              else:
+                  raise SystemExit("OpenObserve did not become ready")
+
+              listed = send("GET", f"/api/{quote(organization)}/dashboards?folder={quote(folder)}")
+              existing = {}
+              for wrapped in listed.get("dashboards", []):
+                  dashboard = next((value for value in wrapped.values() if value), None)
+                  if dashboard:
+                      existing.setdefault(dashboard["title"], []).append(dashboard["dashboardId"])
+
+              for dashboard_path in sorted(Path("/dashboards").glob("*.json")):
+                  dashboard = json.loads(dashboard_path.read_text())
+                  matches = existing.get(dashboard["title"], [])
+                  if matches:
+                      dashboard_id = matches[0]
+                      dashboard["dashboardId"] = dashboard_id
+                      send(
+                          "PUT",
+                          f"/api/{quote(organization)}/dashboards/{quote(dashboard_id)}?folder={quote(folder)}",
+                          dashboard,
+                      )
+                      print(f"Updated dashboard {dashboard['title']} ({dashboard_id})")
+                  else:
+                      send("POST", f"/api/{quote(organization)}/dashboards?folder={quote(folder)}", dashboard)
+                      print(f"Imported dashboard {dashboard['title']}")
           env:
+            - name: PYTHONDONTWRITEBYTECODE
+              value: "1"
+            - name: ZO_ORGANIZATION
+              value: {{ .Values.dashboards.organization | quote }}
+            - name: ZO_DASHBOARD_FOLDER
+              value: {{ .Values.dashboards.folder | quote }}
             - name: ZO_ROOT_USER_EMAIL
               valueFrom:
                 secretKeyRef:
