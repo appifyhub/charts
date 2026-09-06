@@ -1,6 +1,6 @@
 # Observability
 
-This directory contains the Kubernetes (K8s) configuration and Helm chart for a lightweight, self-hosted observability stack based on [OpenObserve](https://openobserve.ai) and [OpenTelemetry](https://opentelemetry.io). The chart wraps the official OpenObserve standalone and OpenTelemetry Collector charts with reusable defaults.
+This directory contains the Kubernetes (K8s) configuration and Helm chart for a lightweight, self-hosted observability stack based on [OpenObserve](https://openobserve.ai), [OpenTelemetry](https://opentelemetry.io) and [NATS](https://nats.io). The chart wraps their official charts with reusable defaults.
 
 ### How to use this?
 
@@ -9,6 +9,7 @@ Most shared prerequisites are covered in the [root-level README](../README.md). 
 The chart deploys:
 
 - 1 OpenObserve standalone pod and its web UI
+- 1 memory-backed NATS pod for OpenObserve coordination and internal queueing
 - 1 OpenTelemetry Collector agent on every node for container logs and `node/pod/container` metrics
 - 1 OpenTelemetry Collector cluster deployment for cluster metrics, Kubernetes events and application OTLP
 - 3 official OpenObserve Kubernetes dashboards
@@ -33,12 +34,13 @@ Every node                              Cluster singleton
                     ├──────────────────────┤
                     │ metadata → Postgres  │
                     │ telemetry → S3       │
+                    │ coordination → NATS  │
                     └──────────────────────┘
 ```
 
-OpenObserve uses the existing CloudNativePG cluster for metadata and the existing SeaweedFS S3 endpoint for Parquet telemetry files. Its `/data` directory is an ephemeral `emptyDir` used only for short-lived WAL/cache data; the container's ephemeral-storage limit bounds it. No new PVC is needed.
+OpenObserve uses the existing CloudNativePG cluster for metadata and the existing SeaweedFS S3 endpoint for Parquet telemetry files. NATS provides the coordination and queueing required when OpenObserve uses PostgreSQL. Both NATS JetStream and OpenObserve's `/data` directory are ephemeral; their memory and ephemeral-storage limits bound local use. No new PVC is needed.
 
-A pod or node loss can discard the small WAL window that has not yet reached SeaweedFS – we accept this risk for now. The chart uses short flush intervals to bound that risk.
+A pod or node loss can discard in-flight NATS messages or the small OpenObserve WAL window that has not yet reached SeaweedFS. OpenObserve reconnects to NATS after restart, while PostgreSQL metadata and telemetry already flushed to SeaweedFS remain durable. We accept the bounded transient-data risk for this lightweight deployment.
 
 ## Prerequisites
 
@@ -123,13 +125,14 @@ Important wrapper values:
 | `openobserve.config.ZO_S3_*` | SeaweedFS/S3 defaults | Object-store connection and bucket |
 | `dashboards.enabled` | `true` | Import the pinned Kubernetes dashboards |
 
-The default resource requests are approximately 384 MiB memory and 150m CPU, plus 96 MiB memory and 30m CPU for each cluster node:
+The default resource requests are approximately 432 MiB memory and 175m CPU, plus 96 MiB memory and 30m CPU for each cluster node:
 
 - OpenObserve: 100m CPU / 256Mi memory requested, 1000m / 1Gi limited
+- NATS: 25m CPU / 48Mi memory requested, 100m / 128Mi limited
 - each node Collector: 30m CPU / 96Mi memory requested, 250m / 256Mi limited
 - cluster Collector: 50m CPU / 128Mi memory requested, 500m / 384Mi limited
 
-There are no node selectors or workload placement constraints. The node Collector tolerates all taints because it must run on every node; Kubernetes schedules the other two pods normally.
+There are no node selectors or workload placement constraints. The node Collector tolerates all taints because it must run on every node; Kubernetes schedules the other workloads normally.
 
 ## Deployment
 
@@ -222,6 +225,7 @@ kubectl --namespace observability top pods
 Expected workloads:
 
 - `openobserve` StatefulSet: 1 pod
+- `nats` StatefulSet: 1 pod
 - `otel-agent` DaemonSet: 1 pod per schedulable node
 - `otel-cluster` Deployment: 1 pod
 
@@ -231,7 +235,7 @@ Open the configured UI, select the `default` organization and verify:
 2. `k8s_events` receives Kubernetes events.
 3. Kubernetes metric streams such as `k8s_node_cpu_usage` and `k8s_pod_memory_rss` exist.
 4. The 3 imported dashboards return data for the configured cluster.
-5. No Collector is repeatedly retrying authentication, PostgreSQL or S3 errors.
+5. OpenObserve, NATS and the Collectors are not repeatedly reporting authentication, PostgreSQL, S3 or coordination errors.
 
 ## Important considerations
 
@@ -241,15 +245,16 @@ The complete observability system is intentionally in the same monitored cluster
 
 ### Persistence and uninstall
 
-Chart uninstall removes OpenObserve and Collector workloads but does not remove the external PostgreSQL database or SeaweedFS objects. Deleting those persistent stores is a separate, destructive action.
+Chart uninstall removes OpenObserve, NATS and Collector workloads but does not remove the external PostgreSQL database or SeaweedFS objects. Deleting those persistent stores is a separate, destructive action.
 
-OpenObserve's local `/data` is ephemeral. A restart can lose only telemetry not yet flushed to SeaweedFS; it cannot remove already persisted Parquet data or PostgreSQL metadata.
+OpenObserve's local `/data` and NATS JetStream state are ephemeral. A restart can lose only in-flight coordination messages and telemetry not yet flushed to SeaweedFS; it cannot remove already persisted Parquet data or PostgreSQL metadata.
 
 ### Upgrades
 
 The wrapper pins:
 
 - OpenObserve standalone chart `0.92.2` / image `v0.92.2`
+- NATS chart `2.14.6` / image `2.14.6-alpine`
 - OpenTelemetry Collector chart `0.172.0` / image `0.159.0`
 - Official dashboards at repository revision `6e2fc4d11b844f45a25a7cfd0cf445b58424158d`
 

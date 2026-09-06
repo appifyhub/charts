@@ -42,6 +42,33 @@ dashboards:
       cpu: 100m
       memory: 64Mi
 
+# OpenObserve requires NATS coordination when PostgreSQL is its metadata store.
+# JetStream is intentionally memory-only so this chart does not create a PVC.
+nats:
+  fullnameOverride: nats
+  config:
+    jetstream:
+      enabled: true
+      fileStore:
+        enabled: false
+      memoryStore:
+        enabled: true
+        maxSize: 64Mi
+  reloader:
+    enabled: false
+  natsBox:
+    enabled: false
+  podDisruptionBudget:
+    enabled: false
+  container:
+    resources:
+      requests:
+        cpu: 25m
+        memory: 48Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
+
 # Official OpenObserve standalone chart
 openobserve:
   fullnameOverride: openobserve
@@ -110,6 +137,14 @@ openobserve:
     ZO_PROF_PYROSCOPE_ENABLED: "false"
 
   extraEnv:
+    - name: ZO_CLUSTER_COORDINATOR
+      value: nats
+    - name: ZO_QUEUE_STORE
+      value: nats
+    - name: ZO_NATS_ADDR
+      value: nats://nats:4222
+    - name: ZO_NATS_EVENT_STORAGE
+      value: memory
     - name: ZO_META_POSTGRES_DSN
       valueFrom:
         secretKeyRef:
