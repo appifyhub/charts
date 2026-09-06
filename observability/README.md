@@ -9,7 +9,7 @@ Most shared prerequisites are covered in the [root-level README](../README.md). 
 The chart deploys:
 
 - 1 OpenObserve standalone pod and its web UI
-- 1 memory-backed NATS pod for OpenObserve coordination and internal queueing
+- 1 ephemeral NATS pod for OpenObserve coordination and internal queueing
 - 1 OpenTelemetry Collector agent on every node for container logs and `node/pod/container` metrics
 - 1 OpenTelemetry Collector cluster deployment for cluster metrics, Kubernetes events and application OTLP
 - 3 official OpenObserve Kubernetes dashboards
@@ -38,7 +38,7 @@ Every node                              Cluster singleton
                     └──────────────────────┘
 ```
 
-OpenObserve uses the existing CloudNativePG cluster for metadata and the existing SeaweedFS S3 endpoint for Parquet telemetry files. NATS provides the coordination and queueing required when OpenObserve uses PostgreSQL; both OpenObserve and NATS are explicitly configured for one NATS replica. Both NATS JetStream and OpenObserve's `/data` directory are ephemeral; their memory and ephemeral-storage limits bound local use. No new PVC is needed.
+OpenObserve uses the existing CloudNativePG cluster for metadata and the existing SeaweedFS S3 endpoint for Parquet telemetry files. NATS provides the coordination and queueing required when OpenObserve uses PostgreSQL; both OpenObserve and NATS are explicitly configured for one NATS replica. NATS JetStream uses bounded memory and ephemeral file storage, and OpenObserve's `/data` directory is also ephemeral. No new PVC is needed.
 
 A pod or node loss can discard in-flight NATS messages or the small OpenObserve WAL window that has not yet reached SeaweedFS. OpenObserve reconnects to NATS after restart, while PostgreSQL metadata and telemetry already flushed to SeaweedFS remain durable. We accept the bounded transient-data risk for this lightweight deployment.
 

@@ -43,14 +43,17 @@ dashboards:
       memory: 64Mi
 
 # OpenObserve requires NATS coordination when PostgreSQL is its metadata store.
-# JetStream is intentionally memory-only so this chart does not create a PVC.
+# JetStream uses bounded ephemeral storage so this chart does not create a PVC.
 nats:
   fullnameOverride: nats
   config:
     jetstream:
       enabled: true
       fileStore:
-        enabled: false
+        enabled: true
+        maxSize: 64Mi
+        pvc:
+          enabled: false
       memoryStore:
         enabled: true
         maxSize: 64Mi
@@ -64,9 +67,11 @@ nats:
     resources:
       requests:
         cpu: 25m
+        ephemeral-storage: 64Mi
         memory: 48Mi
       limits:
         cpu: 100m
+        ephemeral-storage: 256Mi
         memory: 128Mi
 
 # Official OpenObserve standalone chart
