@@ -1,0 +1,393 @@
+{
+  "version": 5,
+  "dashboardId": "8347612059481732001",
+  "title": "Applications / HTTP",
+  "description": "HTTP throughput, success, errors and latency for OpenTelemetry-instrumented applications.",
+  "role": "",
+  "owner": "",
+  "created": "2026-09-07T00:00:00.000Z",
+  "tabs": [
+    {
+      "tabId": "Tab_HTTP_Overview",
+      "name": "HTTP Overview",
+      "panels": [
+        {
+          "id": "Panel_HTTP_Throughput",
+          "type": "line",
+          "title": "Request throughput",
+          "description": "Requests handled per second.",
+          "config": {
+            "show_legends": true,
+            "legends_position": "bottom"
+          },
+          "queryType": "promql",
+          "queries": [
+            {
+              "query": "sum(rate(http_server_duration_count{service_name=~\"$service_name\",deployment_environment_name=~\"$deployment_environment_name\"}[$__rate_interval]))",
+              "vrlFunctionQuery": null,
+              "customQuery": true,
+              "fields": {
+                "stream": "http_server_duration_count",
+                "stream_type": "metrics",
+                "x": [],
+                "y": [],
+                "z": [],
+                "breakdown": [],
+                "filter": {
+                  "filterType": "group",
+                  "logicalOperator": "AND",
+                  "conditions": []
+                }
+              },
+              "config": {
+                "promql_legend": "requests/s",
+                "layer_type": "scatter",
+                "weight_fixed": 1
+              }
+            }
+          ],
+          "layout": {
+            "x": 0,
+            "y": 0,
+            "w": 16,
+            "h": 6,
+            "i": 1
+          }
+        },
+        {
+          "id": "Panel_HTTP_Success",
+          "type": "line",
+          "title": "Successful throughput",
+          "description": "Successful 2xx responses per second.",
+          "config": {
+            "show_legends": true,
+            "legends_position": "bottom"
+          },
+          "queryType": "promql",
+          "queries": [
+            {
+              "query": "sum(rate(http_server_duration_count{service_name=~\"$service_name\",deployment_environment_name=~\"$deployment_environment_name\",http_status_code=~\"2..\"}[$__rate_interval]))",
+              "vrlFunctionQuery": null,
+              "customQuery": true,
+              "fields": {
+                "stream": "http_server_duration_count",
+                "stream_type": "metrics",
+                "x": [],
+                "y": [],
+                "z": [],
+                "breakdown": [],
+                "filter": {
+                  "filterType": "group",
+                  "logicalOperator": "AND",
+                  "conditions": []
+                }
+              },
+              "config": {
+                "promql_legend": "2xx/s",
+                "layer_type": "scatter",
+                "weight_fixed": 1
+              }
+            }
+          ],
+          "layout": {
+            "x": 16,
+            "y": 0,
+            "w": 16,
+            "h": 6,
+            "i": 2
+          }
+        },
+        {
+          "id": "Panel_HTTP_Errors",
+          "type": "line",
+          "title": "Error throughput",
+          "description": "Client and server error responses per second.",
+          "config": {
+            "show_legends": true,
+            "legends_position": "bottom"
+          },
+          "queryType": "promql",
+          "queries": [
+            {
+              "query": "sum(rate(http_server_duration_count{service_name=~\"$service_name\",deployment_environment_name=~\"$deployment_environment_name\",http_status_code=~\"4..\"}[$__rate_interval]))",
+              "vrlFunctionQuery": null,
+              "customQuery": true,
+              "fields": {
+                "stream": "http_server_duration_count",
+                "stream_type": "metrics",
+                "x": [],
+                "y": [],
+                "z": [],
+                "breakdown": [],
+                "filter": {
+                  "filterType": "group",
+                  "logicalOperator": "AND",
+                  "conditions": []
+                }
+              },
+              "config": {
+                "promql_legend": "4xx/s",
+                "layer_type": "scatter",
+                "weight_fixed": 1
+              }
+            },
+            {
+              "query": "sum(rate(http_server_duration_count{service_name=~\"$service_name\",deployment_environment_name=~\"$deployment_environment_name\",http_status_code=~\"5..\"}[$__rate_interval]))",
+              "vrlFunctionQuery": null,
+              "customQuery": true,
+              "fields": {
+                "stream": "http_server_duration_count",
+                "stream_type": "metrics",
+                "x": [],
+                "y": [],
+                "z": [],
+                "breakdown": [],
+                "filter": {
+                  "filterType": "group",
+                  "logicalOperator": "AND",
+                  "conditions": []
+                }
+              },
+              "config": {
+                "promql_legend": "5xx/s",
+                "layer_type": "scatter",
+                "weight_fixed": 1
+              }
+            }
+          ],
+          "layout": {
+            "x": 32,
+            "y": 0,
+            "w": 16,
+            "h": 6,
+            "i": 3
+          }
+        },
+        {
+          "id": "Panel_HTTP_Error_Rate",
+          "type": "line",
+          "title": "Error rate",
+          "description": "Share of responses with a 4xx or 5xx status.",
+          "config": {
+            "show_legends": true,
+            "legends_position": "bottom",
+            "unit": "percent-1"
+          },
+          "queryType": "promql",
+          "queries": [
+            {
+              "query": "sum(rate(http_server_duration_count{service_name=~\"$service_name\",deployment_environment_name=~\"$deployment_environment_name\",http_status_code=~\"[45]..\"}[$__rate_interval])) / sum(rate(http_server_duration_count{service_name=~\"$service_name\",deployment_environment_name=~\"$deployment_environment_name\"}[$__rate_interval]))",
+              "vrlFunctionQuery": null,
+              "customQuery": true,
+              "fields": {
+                "stream": "http_server_duration_count",
+                "stream_type": "metrics",
+                "x": [],
+                "y": [],
+                "z": [],
+                "breakdown": [],
+                "filter": {
+                  "filterType": "group",
+                  "logicalOperator": "AND",
+                  "conditions": []
+                }
+              },
+              "config": {
+                "promql_legend": "error rate",
+                "layer_type": "scatter",
+                "weight_fixed": 1
+              }
+            }
+          ],
+          "layout": {
+            "x": 0,
+            "y": 6,
+            "w": 16,
+            "h": 6,
+            "i": 4
+          }
+        },
+        {
+          "id": "Panel_HTTP_Latency",
+          "type": "line",
+          "title": "Request latency",
+          "description": "Request-duration percentiles in milliseconds.",
+          "config": {
+            "show_legends": true,
+            "legends_position": "bottom"
+          },
+          "queryType": "promql",
+          "queries": [
+            {
+              "query": "histogram_quantile(0.5, sum by (le) (rate(http_server_duration_bucket{service_name=~\"$service_name\",deployment_environment_name=~\"$deployment_environment_name\"}[$__rate_interval])))",
+              "vrlFunctionQuery": null,
+              "customQuery": true,
+              "fields": {
+                "stream": "http_server_duration_bucket",
+                "stream_type": "metrics",
+                "x": [],
+                "y": [],
+                "z": [],
+                "breakdown": [],
+                "filter": {
+                  "filterType": "group",
+                  "logicalOperator": "AND",
+                  "conditions": []
+                }
+              },
+              "config": {
+                "promql_legend": "p50",
+                "layer_type": "scatter",
+                "weight_fixed": 1
+              }
+            },
+            {
+              "query": "histogram_quantile(0.95, sum by (le) (rate(http_server_duration_bucket{service_name=~\"$service_name\",deployment_environment_name=~\"$deployment_environment_name\"}[$__rate_interval])))",
+              "vrlFunctionQuery": null,
+              "customQuery": true,
+              "fields": {
+                "stream": "http_server_duration_bucket",
+                "stream_type": "metrics",
+                "x": [],
+                "y": [],
+                "z": [],
+                "breakdown": [],
+                "filter": {
+                  "filterType": "group",
+                  "logicalOperator": "AND",
+                  "conditions": []
+                }
+              },
+              "config": {
+                "promql_legend": "p95",
+                "layer_type": "scatter",
+                "weight_fixed": 1
+              }
+            },
+            {
+              "query": "histogram_quantile(0.99, sum by (le) (rate(http_server_duration_bucket{service_name=~\"$service_name\",deployment_environment_name=~\"$deployment_environment_name\"}[$__rate_interval])))",
+              "vrlFunctionQuery": null,
+              "customQuery": true,
+              "fields": {
+                "stream": "http_server_duration_bucket",
+                "stream_type": "metrics",
+                "x": [],
+                "y": [],
+                "z": [],
+                "breakdown": [],
+                "filter": {
+                  "filterType": "group",
+                  "logicalOperator": "AND",
+                  "conditions": []
+                }
+              },
+              "config": {
+                "promql_legend": "p99",
+                "layer_type": "scatter",
+                "weight_fixed": 1
+              }
+            }
+          ],
+          "layout": {
+            "x": 16,
+            "y": 6,
+            "w": 16,
+            "h": 6,
+            "i": 5
+          }
+        },
+        {
+          "id": "Panel_HTTP_Endpoints",
+          "type": "line",
+          "title": "Throughput by endpoint",
+          "description": "Requests per second grouped by matched HTTP target.",
+          "config": {
+            "show_legends": true,
+            "legends_position": "right"
+          },
+          "queryType": "promql",
+          "queries": [
+            {
+              "query": "sum by (http_target) (rate(http_server_duration_count{service_name=~\"$service_name\",deployment_environment_name=~\"$deployment_environment_name\"}[$__rate_interval]))",
+              "vrlFunctionQuery": null,
+              "customQuery": true,
+              "fields": {
+                "stream": "http_server_duration_count",
+                "stream_type": "metrics",
+                "x": [],
+                "y": [],
+                "z": [],
+                "breakdown": [],
+                "filter": {
+                  "filterType": "group",
+                  "logicalOperator": "AND",
+                  "conditions": []
+                }
+              },
+              "config": {
+                "promql_legend": "{http_target}",
+                "layer_type": "scatter",
+                "weight_fixed": 1
+              }
+            }
+          ],
+          "layout": {
+            "x": 32,
+            "y": 6,
+            "w": 16,
+            "h": 6,
+            "i": 6
+          }
+        }
+      ]
+    }
+  ],
+  "variables": {
+    "list": [
+      {
+        "type": "query_values",
+        "name": "service_name",
+        "label": "Service",
+        "query_data": {
+          "stream_type": "metrics",
+          "stream": "http_server_duration_count",
+          "field": "service_name",
+          "max_record_size": 100,
+          "filter": []
+        },
+        "value": "",
+        "options": [],
+        "multiSelect": false,
+        "hideOnDashboard": false,
+        "selectAllValueForMultiSelect": "",
+        "customMultiSelectValue": [],
+        "escapeSingleQuotes": false
+      },
+      {
+        "type": "query_values",
+        "name": "deployment_environment_name",
+        "label": "Environment",
+        "query_data": {
+          "stream_type": "metrics",
+          "stream": "http_server_duration_count",
+          "field": "deployment_environment_name",
+          "max_record_size": 100,
+          "filter": [
+            {
+              "name": "service_name",
+              "operator": "=",
+              "value": "$service_name"
+            }
+          ]
+        },
+        "value": "",
+        "options": [],
+        "multiSelect": false,
+        "hideOnDashboard": false,
+        "selectAllValueForMultiSelect": "first",
+        "customMultiSelectValue": [],
+        "escapeSingleQuotes": false
+      }
+    ]
+  }
+}

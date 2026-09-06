@@ -6,6 +6,8 @@ metadata:
   name: {{ .Release.Name }}-dashboards
 
 data:
+  application-http.json: |-
+{{ .Files.Get "dashboards/application-http.json" | indent 4 }}
   namespaces.json: |-
 {{ .Files.Get "dashboards/namespaces.json" | indent 4 }}
   namespace-pods.json: |-

@@ -12,7 +12,7 @@ The chart deploys:
 - 1 ephemeral NATS pod for OpenObserve coordination and internal queueing
 - 1 OpenTelemetry Collector agent on every node for container logs and `node/pod/container` metrics
 - 1 OpenTelemetry Collector cluster deployment for cluster metrics, Kubernetes events and application OTLP
-- 3 official OpenObserve Kubernetes dashboards
+- 3 official OpenObserve Kubernetes dashboards and 1 application HTTP dashboard
 - 1 Traefik ingress for the OpenObserve UI
 
 ## Architecture
@@ -125,7 +125,7 @@ Important wrapper values:
 | `ingress.domain.*` | `observability.example.com` | UI hostname |
 | `openobserve.config.ZO_COMPACT_DATA_RETENTION_DAYS` | `14` | Retention for logs, metrics and traces |
 | `openobserve.config.ZO_S3_*` | SeaweedFS/S3 defaults | Object-store connection and bucket |
-| `dashboards.enabled` | `true` | Import the pinned Kubernetes dashboards |
+| `dashboards.enabled` | `true` | Import the Kubernetes and application HTTP dashboards |
 
 The default resource requests are approximately 432 MiB memory and 175m CPU, plus 96 MiB memory and 30m CPU for each cluster node:
 
@@ -170,15 +170,16 @@ OpenObserve provides one UI for:
 - dashboards and saved views
 - alerts and notification destinations
 
-The post-install/upgrade job idempotently imports pinned upstream revisions of:
+The post-install/upgrade job imports:
 
+- Applications / HTTP
 - Kubernetes / Namespaces
 - Kubernetes / Namespace (Pods)
 - Kubernetes / Nodes
 
-These dashboards cover node, namespace and pod CPU, memory, disk and network usage. The chart supplies both the standard `k8s.cluster.name` resource attribute and the upstream dashboards' legacy `k8s.cluster` compatibility attribute.
+The Kubernetes dashboards cover node, namespace and pod CPU, memory, disk and network usage. The chart supplies both the standard `k8s.cluster.name` resource attribute and the upstream dashboards' legacy `k8s.cluster` compatibility attribute. The application dashboard uses standard OpenTelemetry HTTP server metrics and filters by service and deployment environment. It shows total, successful and error throughput, error rate, latency percentiles and throughput by endpoint.
 
-An application dashboard and saved error view are intentionally not guessed before real application telemetry exists. Add them after the instrumented backend is deployed and the actual stream schema is visible. Alerts are also not provisioned until a notification destination is selected; an alert without a usable destination creates false confidence.
+Saved error views and alerts are intentionally not provisioned until their operational semantics and notification destinations are selected; an alert without a usable destination creates false confidence.
 
 Container stdout appears in the `k8s_logs` stream and Kubernetes events in `k8s_events`. Application JSON records are parsed into fields while ordinary CRI/Uvicorn records remain searchable.
 
@@ -236,7 +237,7 @@ Open the configured UI, select the `default` organization and verify:
 1. `k8s_logs` receives recent container records.
 2. `k8s_events` receives Kubernetes events.
 3. Kubernetes metric streams such as `k8s_node_cpu_usage` and `k8s_pod_memory_rss` exist.
-4. The 3 imported dashboards return data for the configured cluster.
+4. The 4 imported dashboards return data for the configured cluster and instrumented applications.
 5. OpenObserve, NATS and the Collectors are not repeatedly reporting authentication, PostgreSQL, S3 or coordination errors.
 
 ## Important considerations
