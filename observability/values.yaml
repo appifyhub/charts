@@ -26,13 +26,14 @@ ingress:
   tls:
     enabled: false
 
-# Import selected official OpenObserve Kubernetes dashboards after installation.
+# Import and update the bundled OpenObserve dashboards after installation.
 dashboards:
   enabled: true
   organization: default
+  folder: default
   image:
-    repository: curlimages/curl
-    tag: "8.16.0"
+    repository: python
+    tag: "3.12.12-alpine"
     pullPolicy: IfNotPresent
   resources:
     requests:
