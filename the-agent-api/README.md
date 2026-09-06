@@ -115,6 +115,18 @@ helm upgrade the-agent appifyhub/the-agent-api \
 
 It may take a few minutes for the TLS certificate to be issued and for the service to be accessible over HTTPS.
 
+### OpenTelemetry
+
+OpenTelemetry export is disabled by default. Enable it only when the deployment can reach an OTLP Collector:
+
+```bash
+--set opentelemetry.enabled=true \
+--set opentelemetry.endpoint="http://otel-cluster.observability.svc.cluster.local:4318" \
+--set-string opentelemetry.resourceAttributes="deployment.environment.name=staging"
+```
+
+When enabled, the chart configures OTLP HTTP/protobuf export and identifies the service as `the-agent`. The application image derives `service.version` from its bundled `pyproject.toml`, so image updates do not require a chart or ArgoCD value change.
+
 #### Additional configuration
 
 In addition to the install values we changed above using `--set`, there are many other configuration options available in the chart (such as rollback history, open telemetry and prometheus configurations, liveness probes, resource consumption, etc). You can see all of them in the `values.yaml` file.

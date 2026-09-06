@@ -65,6 +65,21 @@ spec:
         - name: {{ .Values.app.name }}
           image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
           imagePullPolicy: {{ .Values.app.image.pullPolicy }}
+          env:
+            - name: OTEL_SDK_DISABLED
+              value: {{ ternary "false" "true" .Values.opentelemetry.enabled | quote }}
+            {{ if .Values.opentelemetry.enabled }}
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: {{ required "opentelemetry.endpoint is required when OpenTelemetry is enabled" .Values.opentelemetry.endpoint | quote }}
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: {{ .Values.opentelemetry.protocol | quote }}
+            - name: OTEL_SERVICE_NAME
+              value: {{ .Values.opentelemetry.serviceName | quote }}
+            {{ if .Values.opentelemetry.resourceAttributes }}
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: {{ .Values.opentelemetry.resourceAttributes | quote }}
+            {{ end }}
+            {{ end }}
           envFrom:
           {{- if eq .Values.secrets.provider "doppler" }}
             - secretRef:
