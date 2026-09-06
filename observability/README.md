@@ -38,7 +38,7 @@ Every node                              Cluster singleton
                     └──────────────────────┘
 ```
 
-OpenObserve uses the existing CloudNativePG cluster for metadata and the existing SeaweedFS S3 endpoint for Parquet telemetry files. NATS provides the coordination and queueing required when OpenObserve uses PostgreSQL; both OpenObserve and NATS are explicitly configured for one NATS replica. NATS JetStream uses bounded memory and ephemeral file storage, and OpenObserve's `/data` directory is also ephemeral. No new PVC is needed.
+OpenObserve uses the existing CloudNativePG cluster for metadata and the existing SeaweedFS S3 endpoint for Parquet telemetry files. NATS provides the coordination and queueing required when OpenObserve uses PostgreSQL; both OpenObserve and NATS are explicitly configured for one NATS replica. NATS JetStream uses ephemeral file storage bounded by the pod's Kubernetes ephemeral-storage limit, and OpenObserve's `/data` directory is also ephemeral. No new PVC is needed.
 
 A pod or node loss can discard in-flight NATS messages or the small OpenObserve WAL window that has not yet reached SeaweedFS. OpenObserve reconnects to NATS after restart, while PostgreSQL metadata and telemetry already flushed to SeaweedFS remain durable. We accept the bounded transient-data risk for this lightweight deployment.
 
@@ -97,6 +97,8 @@ The default `secrets.provider=doppler` configuration expects a Doppler project n
 | `ZO_META_POSTGRES_DSN` | Dedicated PostgreSQL metadata database DSN |
 | `ZO_S3_ACCESS_KEY` | SeaweedFS access key for the dedicated bucket |
 | `ZO_S3_SECRET_KEY` | SeaweedFS secret key for the dedicated bucket |
+
+`ZO_ROOT_USER_PASSWORD` must be 8–128 characters and contain at least one lowercase letter, uppercase letter, digit and special character. For example: `OPENOBSERVE_ROOT_PASSWORD="Oo1!$(openssl rand -hex 30)"`.
 
 Generate a separate Doppler service token for the target config and pass it as `secrets.doppler.token`. Doppler creates the `observability-secrets` K8s Secret; each component reads only the keys it needs.
 
