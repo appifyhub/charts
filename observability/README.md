@@ -170,7 +170,7 @@ OpenObserve provides one UI for:
 - dashboards and saved views
 - alerts and notification destinations
 
-The post-install/upgrade job imports:
+The post-install/upgrade job imports new dashboards and updates existing dashboards with the same title:
 
 - Applications / HTTP
 - Kubernetes / Namespaces
