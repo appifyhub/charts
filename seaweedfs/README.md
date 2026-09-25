@@ -103,6 +103,12 @@ To increase storage at install time:
 
 > ⚠️ &nbsp; **Note**: You cannot easily resize a persistent volume after creation in most cloud environments. Plan your storage needs accordingly.
 
+#### Volume slot capacity
+
+SeaweedFS allocates separate volume slots to independent collections. A volume server can therefore exhaust its slots while its filesystem still has free space. This chart limits new volumes to 400 MB and leaves `maxVolumes` on automatic sizing, allowing SeaweedFS to derive a safe slot count from the volume server's available filesystem capacity.
+
+When upgrading an existing installation from the previous 1,000 MB limit, volumes already at or above 400 MB remain readable but become ineligible for new writes. Each affected collection must allocate a new volume before accepting more data. Ensure the volume server has enough free filesystem space for those replacement volumes before upgrading. Bulk object deletion does not immediately reclaim filesystem space; run SeaweedFS volume vacuuming after deletion when physical reclamation is required.
+
 ### Scaling Limitations
 
 This chart is configured for a single-node setup (1 replica each for master, volume, filer, and S3 gateway). This is sufficient for small to medium workloads. For production environments requiring high availability, increase the replica counts and configure replication in `values.yaml`.

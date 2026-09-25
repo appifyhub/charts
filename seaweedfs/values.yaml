@@ -25,7 +25,9 @@ seaweedfs:
     replicas: 1
     port: 9333
     grpcPort: 19333
-    volumeSizeLimitMB: 1000
+    # Keep volumes small enough that a 10Gi data PVC can serve several
+    # independent collections without exhausting SeaweedFS volume slots.
+    volumeSizeLimitMB: 400
     defaultReplication: "000"
     extraEnvironmentVars:
       WEED_MASTER_VOLUME_GROWTH_COPY_1: "1"
@@ -54,6 +56,7 @@ seaweedfs:
         type: "persistentVolumeClaim"
         size: "10Gi"
         storageClass: "hcloud-volumes"
+        # Derive the slot count from filesystem capacity and volumeSizeLimitMB.
         maxVolumes: 0
     logs:
       type: "emptyDir"
