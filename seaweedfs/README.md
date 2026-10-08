@@ -85,6 +85,10 @@ seaweedfs:
       - name: permanent-files
 ```
 
+### Metadata log retention
+
+The master purges filer metadata-event logs older than seven days approximately every 24 hours. This does not delete application objects. Replication, mount, and backup consumers must not depend on replaying older events. Physical space is reclaimed by volume vacuuming, which requires temporary free space.
+
 ### Pre-signed URLs
 
 Generate time-bound URLs for temporary external access using any S3 SDK's `generate_presigned_url` method. The URL contains a cryptographic signature and expiry timestamp — no further auth is needed on the consumer side. This is useful for sharing files with external services or giving users temporary access to specific files.

@@ -29,6 +29,14 @@ seaweedfs:
     # independent collections without exhausting SeaweedFS volume slots.
     volumeSizeLimitMB: 400
     defaultReplication: "000"
+    config: |
+      [master.maintenance]
+      scripts = """
+        lock
+        fs.log.purge -daysAgo=7
+        unlock
+      """
+      sleep_minutes = 1440
     extraEnvironmentVars:
       WEED_MASTER_VOLUME_GROWTH_COPY_1: "1"
     data:
