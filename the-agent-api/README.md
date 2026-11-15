@@ -115,6 +115,23 @@ helm upgrade the-agent appifyhub/the-agent-api \
 
 It may take a few minutes for the TLS certificate to be issued and for the service to be accessible over HTTPS.
 
+### Rate limiting
+
+Rate limiting is disabled by default and needs Traefik's CRDs when enabled. It limits the routes listed in `ingress.rateLimit.routes`; each entry has an optional `method` and either an exact `path` or a `pathRegexp`. Every listed route is limited with the same settings, one allowance per client and route: `ingress.rateLimit.average` requests per `ingress.rateLimit.period`, with a burst of `ingress.rateLimit.burst`. Requests beyond that answer HTTP 429 at the edge. IPv6 clients are grouped by their `ingress.rateLimit.ipv6Subnet` prefix (`/64` by default). Routes that aren't listed, including webhooks, are untouched, and the main ingress stays as it is.
+
+```bash
+# Turn it on
+--set ingress.rateLimit.enabled=true
+
+# Tune the allowance
+--set ingress.rateLimit.average=10 \
+--set ingress.rateLimit.burst=10
+```
+
+To change the list, edit `ingress.rateLimit.routes` in a values file, since Helm replaces a list as a whole.
+
+> 💡 &nbsp; The limiter keys on the client IP that Traefik sees, so the real client address must reach Traefik (for example through PROXY protocol on the load balancer). Otherwise all clients share the load balancer's address and one allowance.
+
 ### OpenTelemetry
 
 OpenTelemetry export is disabled by default. Enable it only when the deployment can reach an OTLP Collector:
