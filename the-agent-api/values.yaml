@@ -64,6 +64,10 @@ ingress:
         path: /cli/connect
       - method: POST
         pathRegexp: ^/user/[^/]+/connect-key/[^/]+/merge$
+      - method: GET
+        path: /health
+      - method: POST
+        pathRegexp: ^/webhooks/gumroad/ping/[^/]+$
 
 # Secret management
 secrets:
