@@ -579,6 +579,15 @@ entries:
     version: 0.1.0
   the-agent-api:
   - apiVersion: v2
+    created: "2026-11-19T21:11:21.00009913Z"
+    description: The Agent's API service
+    digest: 16d8b7d810fc4c8932a969901b8ccd180121e5a7d128b4be22fa1f8c4495d86f
+    name: the-agent-api
+    type: application
+    urls:
+    - https://github.com/appifyhub/charts/releases/download/the-agent-api-0.9.0/the-agent-api-0.9.0.tgz
+    version: 0.9.0
+  - apiVersion: v2
     created: "2026-11-18T17:33:16.192550493Z"
     description: The Agent's API service
     digest: ea782faa90bec7aadd7e50eb732c61b9ff620f27f8b2c92f9e8714206e806176
@@ -701,4 +710,4 @@ entries:
     urls:
     - https://github.com/appifyhub/charts/releases/download/vault-secrets-0.3.1/vault-secrets-0.3.1.tgz
     version: 0.3.1
-generated: "2026-11-18T17:33:16.192622198Z"
+generated: "2026-11-19T21:11:21.000153672Z"
