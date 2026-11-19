@@ -117,13 +117,15 @@ It may take a few minutes for the TLS certificate to be issued and for the servi
 
 ### Rate limiting
 
-Rate limiting is disabled by default and needs Traefik's CRDs when enabled. It limits the routes listed in `ingress.rateLimit.routes`; each entry has an optional `method` and either an exact `path` or a `pathRegexp`. Every listed route is limited with the same settings, one allowance per client and route: `ingress.rateLimit.average` requests per `ingress.rateLimit.period`, with a burst of `ingress.rateLimit.burst`. Requests beyond that answer HTTP 429 at the edge. IPv6 clients are grouped by their `ingress.rateLimit.ipv6Subnet` prefix (`/64` by default). Routes that aren't listed, including webhooks, are untouched, and the main ingress stays as it is.
+Rate limiting requires Traefik's CRDs and is controlled by `ingress.rateLimit.enabled`. It applies to entries in `ingress.rateLimit.routes`; each entry has an optional `method` and either an exact `path` or a `pathRegexp`. Each listed route has one allowance per client, configured by `ingress.rateLimit.average`, `ingress.rateLimit.period`, and `ingress.rateLimit.burst`. Requests beyond the allowance receive HTTP 429 at the edge. IPv6 grouping is configured by `ingress.rateLimit.ipv6Subnet`. Routes that aren't listed are untouched, and the main ingress stays as it is.
+
+Each route can override `average`; otherwise it uses the global allowance. Exact paths take precedence over regular expressions. Consult `values.yaml` and your deployment overrides for configured routes and limits.
 
 ```bash
 # Turn it on
 --set ingress.rateLimit.enabled=true
 
-# Tune the allowance
+# Example: tune the allowance
 --set ingress.rateLimit.average=10 \
 --set ingress.rateLimit.burst=10
 ```

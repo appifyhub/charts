@@ -12,15 +12,15 @@ spec:
     - {{ trim . }}
     {{- end }}
   routes:
-    {{- range .Values.ingress.rateLimit.routes }}
+    {{- range $index, $route := .Values.ingress.rateLimit.routes }}
     {{- if not (or .path .pathRegexp) }}
     {{- fail "each ingress.rateLimit.routes entry needs a path or a pathRegexp" }}
     {{- end }}
     - kind: Rule
       match: 'Host(`{{ $host }}`){{ with .method }} && Method(`{{ . }}`){{ end }} && {{ if .pathRegexp }}PathRegexp(`{{ .pathRegexp }}`){{ else }}Path(`{{ .path }}`){{ end }}'
-      priority: 1000
+      priority: {{ if .path }}1001{{ else }}1000{{ end }}
       middlewares:
-        - name: {{ $.Release.Name }}-rate-limit
+        - name: {{ $.Release.Name }}-rate-limit{{ if hasKey . "average" }}-{{ $index }}{{ end }}
       services:
         - name: {{ $.Release.Name }}-service
           port: {{ $.Values.app.servicePort }}

@@ -62,6 +62,8 @@ ingress:
     routes:
       - method: POST
         path: /cli/connect
+      - pathRegexp: ^/cli/
+        average: 10
       - method: POST
         pathRegexp: ^/user/[^/]+/connect-key/[^/]+/merge$
       - method: GET

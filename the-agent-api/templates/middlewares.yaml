@@ -13,4 +13,21 @@ spec:
     sourceCriterion:
       ipStrategy:
         ipv6Subnet: {{ .Values.ingress.rateLimit.ipv6Subnet }}
+{{- range $index, $route := .Values.ingress.rateLimit.routes }}
+{{- if hasKey $route "average" }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ $.Release.Name }}-rate-limit-{{ $index }}
+spec:
+  rateLimit:
+    average: {{ $route.average }}
+    period: {{ $.Values.ingress.rateLimit.period | quote }}
+    burst: {{ $.Values.ingress.rateLimit.burst }}
+    sourceCriterion:
+      ipStrategy:
+        ipv6Subnet: {{ $.Values.ingress.rateLimit.ipv6Subnet }}
+{{- end }}
+{{- end }}
 {{- end }}
