@@ -70,6 +70,9 @@ ingress:
         path: /health
       - method: POST
         pathRegexp: ^/webhooks/gumroad/ping/[^/]+$
+      - method: GET
+        path: /cli/status
+        average: 10
 
 # Secret management
 secrets:
